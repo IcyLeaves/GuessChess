@@ -29,11 +29,11 @@ public class BoardManager : MonoBehaviour
             {
                 Vector3 pos = new Vector3(playerOneCornerPoint.position.x + x, playerOneCornerPoint.position.y + y, 0f);
                 GameObject instance = Instantiate(floorTile, pos, Quaternion.identity) as GameObject;
-                instance.transform.SetParent(boardHolder);
+                instance.transform.SetParent(playerOneCornerPoint);
 
                 pos= new Vector3(playerTwoCornerPoint.position.x + x, playerTwoCornerPoint.position.y + y, 0f);
                 instance = Instantiate(floorTile, pos, Quaternion.identity) as GameObject;
-                instance.transform.SetParent(boardHolder);
+                instance.transform.SetParent(playerTwoCornerPoint);
             }
 
         }

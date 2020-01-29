@@ -36,6 +36,10 @@ public class Launcher : MonoBehaviourPunCallbacks
         }
         else
         {
+            PhotonNetwork.PhotonServerSettings.AppSettings.FixedRegion = "cn";
+            PhotonNetwork.PhotonServerSettings.AppSettings.UseNameServer = true;
+            PhotonNetwork.PhotonServerSettings.AppSettings.AppIdRealtime = "23cae289-781e-41a6-833b-692ca50caf1b"; // 替换为您自己的国内区appID
+            PhotonNetwork.PhotonServerSettings.AppSettings.Server = "ns.photonengine.cn";
             PhotonNetwork.ConnectUsingSettings();
         }
         progressLabel.SetActive(true);
