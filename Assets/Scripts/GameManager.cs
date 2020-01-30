@@ -21,13 +21,23 @@ public class GameManager : MonoBehaviourPunCallbacks
     private GameState gameState;
     private enum GameState
     {
-        Idle,Gaming
+        Idle,Gaming,GameOver
     }
     private void Start()
     {
         Instance = this;
         gameState = GameState.Idle;
     }
+
+    #region UI
+    public void OnClickStartBtn()
+    {
+        if (gameState == GameState.GameOver)
+            Restart();
+        else
+            StartNewRound();
+    }
+    #endregion
 
     #region Lobby
     public override void OnLeftRoom()
@@ -74,11 +84,18 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     #endregion
 
+    //心理战游戏
     #region Turn
 
-    //当一个玩家主动结束他的回合后调用此方法
+    private void StartNewTurn()
+    {
+        //唤醒指定Id的玩家，新的回合开始
+        players[currentPlayerIdx].StartTurn();
+        logText.text = "现在进行玩家 " + currentPlayerIdx + "的回合";
+    }//*
     public void OnCompleteTurn()
     {
+        //当一个玩家主动结束他的回合后调用此方法
         if (gameState != GameState.Idle)
             //将回合交给下一位
             ChangeTurnToNext();
@@ -98,14 +115,14 @@ public class GameManager : MonoBehaviourPunCallbacks
         if (IsNowNumExceed())
         {
             //如果爆掉了，就游戏结束
-            GameOver();
+            TurnFinish();
         }
         else
         {
             //如果没爆掉，游戏继续
         }
 
-    }
+    }//!
     private void ChangeTurnToNext()
     {
         //将当前玩家序号递增一位
@@ -115,12 +132,6 @@ public class GameManager : MonoBehaviourPunCallbacks
             currentPlayerIdx = 0;
         }
         StartNewTurn();
-    }
-    private void StartNewTurn()
-    {
-        //唤醒指定Id的玩家，新的回合开始
-        players[currentPlayerIdx].StartTurn();
-        logText.text = "现在进行玩家 " + currentPlayerIdx + "的回合";
     }
     private bool IsNowNumExceed()
     {
@@ -134,10 +145,34 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     #endregion
 
+    //海战棋
     #region Round
-    public void GameStart()
+    private void StartNewRound()
     {
-        if (gameState == GameState.Gaming) return;
+        if (gameState != GameState.Idle) return;
+        //开始一个新的游戏，首先分配星星
+        AllocateStar();
+    }
+    private void AllocateStar()
+    {
+        logText.text = "请双方放置星星";
+        starPlacedCount = 0;
+        for (int i = 0; i < players.Count; i++)
+        {
+            players[i].PlaceStar();
+        }
+    }//*
+    private int starPlacedCount;
+    public void StarPlaced()
+    {
+        //每个玩家放置完星星都要调用这个方法，调用次数满后开始第一个Turn
+        starPlacedCount++;
+        if (starPlacedCount == 2)
+            TurnBegin();
+    }
+
+    public void TurnBegin()
+    {
         //一回合开始，清零当前数字，状态为游戏中
         nowNum = 0;
         gameState = GameState.Gaming;
@@ -146,14 +181,34 @@ public class GameManager : MonoBehaviourPunCallbacks
         logText.text = "先手是玩家 " + firstTurn;
         //切换到先手回合
         ChangeTurnTo(firstTurn);
-    }
-    private void GameOver()
+    }//*
+    private void TurnFinish()
     {
-        //判断输家
-        logText.text = "获胜的是：玩家 " + (1 - currentPlayerIdx).ToString();
+        //判断赢家及伤害值
+        int winner = 1 - currentPlayerIdx;
+        int dmg = nowNum - goalNum;
+        logText.text = "获胜的是：玩家 " + winner.ToString();
         //回合结束
         gameState = GameState.Idle;
-    }
+        DealDamageFrom(winner, dmg);
+    }//*
 
+    private void DealDamageFrom(int playerIdx,int dmg)
+    {
+        logText.text = "玩家 " + playerIdx + "正在攻击";
+        players[playerIdx].Attack(dmg);
+    }//*
+    #endregion
+
+    #region Game
+    public void Restart()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+    public void Over(int winner)
+    {
+        gameState = GameState.GameOver;
+        logText.text = "赢家是：玩家" + winner;
+    }//*
     #endregion
 }

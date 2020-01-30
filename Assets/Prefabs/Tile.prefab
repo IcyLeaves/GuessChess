@@ -122,3 +122,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 79ac4cc3983dc4b4fab4523fe75054cd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  spriteNothing: {fileID: 1807125615787039003, guid: 0b77b91cbadf09f438822ec43c96c0d6,
+    type: 3}
+  spriteStar: {fileID: -6614373457484812694, guid: 0b77b91cbadf09f438822ec43c96c0d6,
+    type: 3}
+  spriteDmg: {fileID: 349823833441268365, guid: 0b77b91cbadf09f438822ec43c96c0d6,
+    type: 3}
+  spriteDmgStar: {fileID: 1639214462598301798, guid: 0b77b91cbadf09f438822ec43c96c0d6,
+    type: 3}
