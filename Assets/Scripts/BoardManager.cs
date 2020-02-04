@@ -1,7 +1,9 @@
-﻿using System.Collections;
+﻿using Photon.Pun;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Random = UnityEngine.Random;
+
 
 public class BoardManager : MonoBehaviour
 {
@@ -18,6 +20,7 @@ public class BoardManager : MonoBehaviour
     {
         Instance = this;
         BoardSetup();
+
     }
     /// <summary>
     /// 外墙和地板的生成函数

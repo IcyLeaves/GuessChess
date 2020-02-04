@@ -34,7 +34,7 @@ public class BoardScript : MonoBehaviour
         if (Input.GetMouseButtonDown(0))
         {
             //调用当前本地玩家ID方法
-            GameManager.Instance.players[0].ClickGrid(this);
+            GameManager.Instance.players[CustomProperties.playerLocalIdx].ClickGrid(this);
         }
     }
 

@@ -11,7 +11,7 @@ public class AiManager : PlayerManager
     }
     public override void StartTurn()
     {
-        myState = PlayerState.ChooseNumbers;
+        //myState = PlayerState.ChooseNumbers;
         StartCoroutine(AddNum());
     }
     private IEnumerator AddNum()
@@ -20,24 +20,24 @@ public class AiManager : PlayerManager
         yield return new WaitForSeconds(1);
         //设定选择的数字
         int value = Random.Range(1, 6);
-        GameManager.Instance.AddNowNum(value);
+        //GameManager.Instance.AddNowNum(value);
         Debug.Log("+" + value);
         //结束我的回合
-        myState = PlayerState.OthersTurn;
+        //myState = PlayerState.OthersTurn;
         GameManager.Instance.OnCompleteTurn();
     }//!
 
     public override void PlaceStar()
     {
-        myState = PlayerState.PlaceStar;
+        //myState = PlayerState.PlaceStar;
         myStarPos = new Vector2(Random.Range(1, 9), Random.Range(1, 9));
         Debug.Log("Star placed in " + myStarPos);
-        GameManager.Instance.StarPlaced();
+        //GameManager.Instance.StarPlaced();
     }//!
 
     public override void Attack(int ammos)
     {
-        myState = PlayerState.Attack;
+        //myState = PlayerState.Attack;
         StartCoroutine(AttackBoard(ammos));
     }
     private IEnumerator AttackBoard(int ammos)
@@ -65,7 +65,7 @@ public class AiManager : PlayerManager
         }
         
         //通知GameManager，开始新的Turn
-        myState = PlayerState.OthersTurn;
+        //myState = PlayerState.OthersTurn;
         GameManager.Instance.TurnBegin();
     }//!
 }

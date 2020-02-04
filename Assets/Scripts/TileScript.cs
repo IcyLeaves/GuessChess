@@ -1,29 +1,21 @@
-﻿using System.Collections;
+﻿using Photon.Pun;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class TileScript : MonoBehaviour
 {
-    public int targetPlayerId = 0;
     public int value;
+
     private void OnMouseOver()
     {
-        //1.左键按下 2.当前是你的回合
-        if (Input.GetMouseButtonDown(0) && IsYourTurn())
+        //1.左键按下
+        //2.此客户端状态为<选择数字>
+        if (Input.GetMouseButtonDown(0) &&
+            CustomProperties.GetLocalState() == PlayerManager.PlayerState.ChooseNumbers)
         {
-            //为玩家选择数字
-            PickNum(GameManager.Instance.players[targetPlayerId]);
+            //调用客户端对应Player脚本 加数字 方法
+            GameManager.Instance.players[CustomProperties.playerLocalIdx].AddNum(value);
         }
-    }
-    private bool IsYourTurn()
-    {
-        return GameManager.Instance.currentPlayerIdx == targetPlayerId;
-    }
-
-    private void PickNum(PlayerManager player)
-    {
-        //玩家挑选数字加上
-        if (player.myState == PlayerManager.PlayerState.ChooseNumbers)
-            player.AddNum(value);
     }
 }

@@ -3,54 +3,88 @@ using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
 using Photon.Pun.UtilityScripts;
+using Hashtable = ExitGames.Client.Photon.Hashtable;
 
 public class PlayerManager : MonoBehaviourPunCallbacks
 {
-    public PlayerState myState;
-    public int myId = 0;
+    public int myId = 1;
     public Vector2 myStarPos;
     public enum PlayerState
     {
-        PlaceStar, PlaceComplete, ChooseNumbers, Attack, OthersTurn,
+        Idle, Ready, PlaceStar, PlaceComplete, ChooseNumbers, Attack, OthersTurn,
     }
 
     private int myAmmos;
 
-    private void Update()
-    {
+    #region UI
 
+    public void OnClickStartBtn()
+    {
+        //1.只有本地玩家触发
+        //2.若玩家为<闲置>,切换为<已准备>
+        if (PhotonNetwork.CurrentRoom.Players[myId].IsLocal &&
+            CustomProperties.GetLocalState() == PlayerState.Idle)
+        {
+            CustomProperties.SetLocalState(PlayerState.Ready);
+        }
     }
+
+    #endregion
+
+    #region Prop
+    public override void OnRoomPropertiesUpdate(Hashtable propertiesThatChanged)
+    {
+        object tempObj;
+        //[房间当前玩家]
+        if (propertiesThatChanged.TryGetValue("currentPlayer", out tempObj))
+        {
+            int currentPlayer = (int)tempObj;
+            //1.此Player脚本是客户端方
+            if (PhotonNetwork.LocalPlayer.ActorNumber == myId)
+            {
+                //2.此客户端方是轮方
+                if (myId == currentPlayer)
+                {
+                    StartTurn();
+                }
+                //2.此客户端方不是轮方
+                else
+                {
+                    CustomProperties.SetLocalPlayerProp("state", PlayerState.OthersTurn);
+                }
+            }
+        }
+        //[房间当前数字]
+        if (propertiesThatChanged.TryGetValue("nowNum",out tempObj))
+        {
+            int nowNum = (int)tempObj;
+        }
+    }
+    #endregion
 
     public virtual void StartTurn()
     {
-        myState = PlayerState.ChooseNumbers;
+        CustomProperties.SetLocalState(PlayerState.ChooseNumbers);
     }
-
     public virtual void AddNum(int value)
     {
-        //设定房间的当前数字
-        GameManager.Instance.AddNowNum(value);
-        Debug.Log("+" + value);
-        //结束我的回合
-        myState = PlayerState.OthersTurn;
-        GameManager.Instance.OnCompleteTurn();
+        //传递玩家选择的数字
+        CustomProperties.SetLocalPlayerProp("num", value);
+        //Debug.Log("+" + value);
     }//!
-
     public virtual void PlaceStar()
     {
-        myState = PlayerState.PlaceStar;
+        CustomProperties.SetLocalState(PlayerState.PlaceStar);
         //启用鼠标图标渲染
         Hover.Instance.Activate(Hover.HoverState.Star);
         //等待BoardScript接收单击指令调用ClickGrid
     }
     protected virtual void ChooseStar(Vector2 pos)
     {
-        myStarPos = pos;
+        CustomProperties.SetLocalPlayerProp("starPos", pos);
     }
-
     public virtual void Attack(int ammos)
     {
-        myState = PlayerState.Attack;
         //装填弹药
         myAmmos = ammos;
         //启用鼠标图标渲染
@@ -59,12 +93,12 @@ public class PlayerManager : MonoBehaviourPunCallbacks
     }
     public virtual void ClickGrid(BoardScript board)
     {
-        switch (myState)
+        switch (CustomProperties.GetLocalState())
         {
             case PlayerState.PlaceStar:
                 //1.必须是自己的面板
                 //2.方块上必须什么都没有
-                if (board.gridPos.playerIdx == myId)
+                if (CustomProperties.playersNumber[board.gridPos.playerIdx] == myId)
                 {
                     //将此玩家的星星值设置成方块的pos
                     ChooseStar(board.gridPos.pos);
@@ -73,20 +107,19 @@ public class PlayerManager : MonoBehaviourPunCallbacks
                     //取消鼠标悬浮图标
                     Hover.Instance.Deactivate();
                     //放置完成，通知GameManager
-                    myState = PlayerState.PlaceComplete;
-                    GameManager.Instance.StarPlaced();
+                    CustomProperties.SetLocalState(PlayerState.PlaceComplete);
                 }
                 break;
             case PlayerState.Attack:
                 //1.必须是别人的面板
                 //2.方块上不能是已经被攻击过的
-                if (board.gridPos.playerIdx != myId &&
-                    board.boardState!=BoardScript.BoardState.Damaged)
+                if (CustomProperties.playersNumber[board.gridPos.playerIdx] != myId &&
+                    board.boardState != BoardScript.BoardState.Damaged)
                 {
                     //剩余次数-1
                     myAmmos--;
                     //如果攻击到了星星
-                    if(board.gridPos.pos == GameManager.Instance.players[1 - myId].myStarPos)
+                    if (board.gridPos.pos == (Vector2)CustomProperties.GetPlayerProp("starPos",false))
                     {
                         //回调，将被点击方块改成受损星星
                         board.ChangeSprite(BoardScript.BoardState.DamagedStar);
@@ -99,12 +132,11 @@ public class PlayerManager : MonoBehaviourPunCallbacks
                     //回调，将被点击方块改成受损
                     board.ChangeSprite(BoardScript.BoardState.Damaged);
                     //如果攻击完成
-                    if(myAmmos==0)
+                    if (myAmmos == 0)
                     {
                         //取消鼠标悬浮图标
                         Hover.Instance.Deactivate();
                         //通知GameManager，开始新的Turn
-                        myState =PlayerState.OthersTurn;
                         GameManager.Instance.TurnBegin();
                     }
                 }
