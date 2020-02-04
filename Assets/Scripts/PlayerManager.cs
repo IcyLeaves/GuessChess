@@ -113,11 +113,15 @@ public class PlayerManager : MonoBehaviourPunCallbacks
             case PlayerState.Attack:
                 //1.必须是别人的面板
                 //2.方块上不能是已经被攻击过的
+                //3.游戏状态必须为<Round>
                 if (CustomProperties.playersNumber[board.gridPos.playerIdx] != myId &&
-                    board.boardState != BoardScript.BoardState.Damaged)
+                    board.boardState != BoardScript.BoardState.Damaged &&
+                    GameManager.Instance.GetRoomState()==GameManager.GameState.Round)
                 {
                     //剩余次数-1
                     myAmmos--;
+                    //发送攻击坐标
+                    CustomProperties.SetLocalPlayerProp("attackPos", board.gridPos.pos);
                     //如果攻击到了星星
                     if (board.gridPos.pos == (Vector2)CustomProperties.GetPlayerProp("starPos",false))
                     {

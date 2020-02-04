@@ -14,18 +14,18 @@ public class GameManager : MonoBehaviourPunCallbacks
     public static GameManager Instance;
     public int goalNum = 20;
     public List<PlayerManager> players;
+    public BoardManager boardManager;
+    public enum GameState
+    {
+        Idle, Round, Turn, GameOver, Restart
+    }
 
     public Text logText;
     public Text PlayerOneText;
     public Text PlayerTwoText;
 
     private int nowNum;
-    private enum GameState
-    {
-        Idle, Round, Turn, GameOver,Restart
-    }
-
-
+    
     private void Start()
     {
         Instance = this;
@@ -64,7 +64,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     {
         return (PlayerManager.PlayerState)CustomProperties.GetPlayerProp("state", id);
     }
-    private GameState GetRoomState()
+    public GameState GetRoomState()
     {
         return (GameState)CustomProperties.GetRoomProp("state");
     }
@@ -153,6 +153,26 @@ public class GameManager : MonoBehaviourPunCallbacks
             }
 
         }
+        //[玩家攻击方块]
+        if(changedProps.TryGetValue("attackPos",out tempObj))
+        {
+            Vector2 attackPos = (Vector2)tempObj;
+            //1.来自另一方的攻击
+            if(!targetPlayer.IsLocal)
+            {
+                //获取受到攻击的方块
+                BoardScript board = boardManager.GetPosBoard(CustomProperties.playerLocalIdx, attackPos);
+                //如果攻击到了星星
+                if (attackPos == (Vector2)CustomProperties.GetPlayerProp("starPos"))
+                {
+                    //回调，将被点击方块改成受损星星
+                    board.ChangeSprite(BoardScript.BoardState.DamagedStar);
+                    return;
+                }
+                //将被点击方块改成受损
+                board.ChangeSprite(BoardScript.BoardState.Damaged);
+            }
+        }
     }
     public override void OnRoomPropertiesUpdate(Hashtable propertiesThatChanged)
     {
@@ -173,6 +193,20 @@ public class GameManager : MonoBehaviourPunCallbacks
             {
                 case GameState.Restart:
                     Restart();
+                    break;
+                case GameState.GameOver:
+                    int winnerNumber = (int)CustomProperties.GetRoomProp("winnerNumber");
+                    logText.text = "赢家是：" + PhotonNetwork.CurrentRoom.Players[winnerNumber].NickName;
+                    //1.赢家是对方才需公开
+                    if (winnerNumber!=PhotonNetwork.LocalPlayer.ActorNumber)
+                    {
+                        //获取赢家星星位置
+                        Vector2 pos = (Vector2)CustomProperties.GetPlayerProp("starPos", false);
+                        //获取赢家星星的方块
+                        BoardScript board = boardManager.GetPosBoard(CustomProperties.playerOtherIdx, pos);
+                        //公开赢家的星星位置
+                        board.ChangeSprite(BoardScript.BoardState.Star);
+                    }
                     break;
                 default:
                     break;
@@ -350,8 +384,8 @@ public class GameManager : MonoBehaviourPunCallbacks
     }
     public void Over(int winnerNumber)
     {
+        CustomProperties.SetRoomProp("winnerNumber", winnerNumber);
         CustomProperties.SetRoomProp("state", GameState.GameOver);
-        logText.text = "赢家是：" + PhotonNetwork.CurrentRoom.Players[winnerNumber].NickName;
     }//*
     public void Begin()
     {

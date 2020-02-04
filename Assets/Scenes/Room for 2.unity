@@ -1997,6 +1997,11 @@ PrefabInstance:
       propertyPath: PlayerTwoText
       value: 
       objectReference: {fileID: 420409367}
+    - target: {fileID: 780190125798078074, guid: 081edd38832e9cd4e881dc39b162cac3,
+        type: 3}
+      propertyPath: boardManager
+      value: 
+      objectReference: {fileID: 2052056574}
     - target: {fileID: 2366959728170532561, guid: 081edd38832e9cd4e881dc39b162cac3,
         type: 3}
       propertyPath: m_LocalPosition.x

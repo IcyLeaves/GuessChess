@@ -65,7 +65,7 @@ public class BoardManager : MonoBehaviour
     public BoardScript GetPosBoard(int playerId, Vector2 pos)
     {
         Transform selectedBoard = playerId == 0 ? playerOneCornerPoint : playerTwoCornerPoint;
-        return selectedBoard.GetChild((int)(pos.x * cols + pos.y)).GetComponent<BoardScript>();
+        return selectedBoard.GetChild((int)(pos.y * cols + pos.x)).GetComponent<BoardScript>();
     }
     private List<BoardScript> SelectAllAlive(int playerId)
     {
