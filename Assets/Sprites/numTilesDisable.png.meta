@@ -1,37 +1,37 @@
 fileFormatVersion: 2
-guid: 6f743ffe5131e734a98012af17c3336d
+guid: c0336329b86ad83449460663168d6ecb
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -1216806309730103528
-    second: numTiles_0
+      213: -9201914408493118433
+    second: numTilesDisable_0
   - first:
-      213: -8423380080303234236
-    second: numTiles_1
+      213: -1005735852388924538
+    second: numTilesDisable_1
   - first:
-      213: -3000782420929756111
-    second: numTiles_2
+      213: 4822670243519985894
+    second: numTilesDisable_2
   - first:
-      213: 218912321741733825
-    second: numTiles_3
+      213: -2172257995230104470
+    second: numTilesDisable_3
   - first:
-      213: 4024008223042071464
-    second: numTiles_4
+      213: -193002242620685612
+    second: numTilesDisable_4
   - first:
-      213: -3729186646061951888
-    second: numTiles_5
+      213: 1723731680696250043
+    second: numTilesDisable_5
   - first:
-      213: -4644726963700413619
-    second: numTiles_6
+      213: 4551453522075335193
+    second: numTilesDisable_6
   - first:
-      213: -7318659557837370290
-    second: numTiles_7
+      213: -4021428318598323214
+    second: numTilesDisable_7
   - first:
-      213: 6230194133334855945
-    second: numTiles_8
+      213: 6098743580147848779
+    second: numTilesDisable_8
   - first:
-      213: -5077836963375237683
-    second: numTiles_9
+      213: 387682111456568755
+    second: numTilesDisable_9
   externalObjects: {}
   serializedVersion: 10
   mipmaps:
@@ -116,7 +116,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: numTiles_0
+      name: numTilesDisable_0
       rect:
         serializedVersion: 2
         x: 0
@@ -130,14 +130,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 109273ca73c634a498be736ec6538d42
-      internalID: -1216806309730103528
+      spriteID: e0d58b498f7b9b240bbc9f230a2f0321
+      internalID: -9201914408493118433
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: numTiles_1
+      name: numTilesDisable_1
       rect:
         serializedVersion: 2
         x: 16
@@ -151,14 +151,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 216de0e1d9f4b714c96a1e811994c9a6
-      internalID: -8423380080303234236
+      spriteID: a3cd5215259a27a45a16e1a6379a6b04
+      internalID: -1005735852388924538
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: numTiles_2
+      name: numTilesDisable_2
       rect:
         serializedVersion: 2
         x: 32
@@ -172,14 +172,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 6330f2c5fd2b36747914ec0888523f49
-      internalID: -3000782420929756111
+      spriteID: ee7cf1fb4d362fd40a7ddbfa6ccb150b
+      internalID: 4822670243519985894
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: numTiles_3
+      name: numTilesDisable_3
       rect:
         serializedVersion: 2
         x: 48
@@ -193,14 +193,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: dcca90fc8a4bd0243a732ac4cd6ea67d
-      internalID: 218912321741733825
+      spriteID: 8fa57ade2fedf3c42a9f855abe6b3d43
+      internalID: -2172257995230104470
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: numTiles_4
+      name: numTilesDisable_4
       rect:
         serializedVersion: 2
         x: 0
@@ -214,14 +214,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: a8721eb3e3a39274194b13207ba80bc2
-      internalID: 4024008223042071464
+      spriteID: 1f3abba09684d0d47bbfe3f3e5b375b4
+      internalID: -193002242620685612
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: numTiles_5
+      name: numTilesDisable_5
       rect:
         serializedVersion: 2
         x: 16
@@ -235,14 +235,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: d3dd582e2fce9d04c9669d3a6b111ff7
-      internalID: -3729186646061951888
+      spriteID: a4b1b6087c5792f4cbf77289d3d473df
+      internalID: 1723731680696250043
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: numTiles_6
+      name: numTilesDisable_6
       rect:
         serializedVersion: 2
         x: 32
@@ -256,14 +256,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: b5043060a9b138f4ba1d13d861be93e4
-      internalID: -4644726963700413619
+      spriteID: dd440f4ff3337f64985da5b1b7665d8f
+      internalID: 4551453522075335193
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: numTiles_7
+      name: numTilesDisable_7
       rect:
         serializedVersion: 2
         x: 48
@@ -277,14 +277,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 1d86126bda4b8dc408bb071d5593a86c
-      internalID: -7318659557837370290
+      spriteID: ca88e13c210eb264e8d607f4b63ebac5
+      internalID: -4021428318598323214
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: numTiles_8
+      name: numTilesDisable_8
       rect:
         serializedVersion: 2
         x: 0
@@ -298,14 +298,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: ac526068250a539498bf0a42b3815d4d
-      internalID: 6230194133334855945
+      spriteID: b72566ab861b54d4197ef90b5c4c1f25
+      internalID: 6098743580147848779
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: numTiles_9
+      name: numTilesDisable_9
       rect:
         serializedVersion: 2
         x: 16
@@ -319,8 +319,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 059ea3c70d1f2934e918854d5baf5db5
-      internalID: -5077836963375237683
+      spriteID: f6143eb6205b8c544ba9f4dcf0dc44fe
+      internalID: 387682111456568755
       vertices: []
       indices: 
       edges: []

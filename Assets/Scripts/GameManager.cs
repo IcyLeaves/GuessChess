@@ -25,7 +25,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     public Text PlayerTwoText;
 
     private int nowNum;
-    
+
     private void Start()
     {
         Instance = this;
@@ -50,7 +50,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     public void OnClickStartBtn()
     {
         //1.若游戏<结束>，则游戏<开始>
-        if((GameState)CustomProperties.GetRoomProp("state")==GameState.GameOver)
+        if ((GameState)CustomProperties.GetRoomProp("state") == GameState.GameOver)
         {
             CustomProperties.SetRoomProp("state", GameState.Restart);
         }
@@ -107,7 +107,7 @@ public class GameManager : MonoBehaviourPunCallbacks
                     if (targetPlayer.IsLocal)
                     {
                         logText.text = "当前数字：" + nowNum + "/20" + "\n"
-                        + "请攻击"+(nowNum-goalNum)+"次";
+                        + "请攻击" + (nowNum - goalNum) + "次";
                         DealDamageFrom(targetPlayer.ActorNumber, nowNum - goalNum);
                     }
                     else
@@ -154,11 +154,11 @@ public class GameManager : MonoBehaviourPunCallbacks
 
         }
         //[玩家攻击方块]
-        if(changedProps.TryGetValue("attackPos",out tempObj))
+        if (changedProps.TryGetValue("attackPos", out tempObj))
         {
             Vector2 attackPos = (Vector2)tempObj;
             //1.来自另一方的攻击
-            if(!targetPlayer.IsLocal)
+            if (!targetPlayer.IsLocal)
             {
                 //获取受到攻击的方块
                 BoardScript board = boardManager.GetPosBoard(CustomProperties.playerLocalIdx, attackPos);
@@ -186,10 +186,10 @@ public class GameManager : MonoBehaviourPunCallbacks
             TurnFinish(exceedPlayer);
         }
         //[房间状态]
-        if(propertiesThatChanged.TryGetValue("state",out tempObj))
+        if (propertiesThatChanged.TryGetValue("state", out tempObj))
         {
             GameState state = (GameState)tempObj;
-            switch(state)
+            switch (state)
             {
                 case GameState.Restart:
                     Restart();
@@ -198,7 +198,7 @@ public class GameManager : MonoBehaviourPunCallbacks
                     int winnerNumber = (int)CustomProperties.GetRoomProp("winnerNumber");
                     logText.text = "赢家是：" + PhotonNetwork.CurrentRoom.Players[winnerNumber].NickName;
                     //1.赢家是对方才需公开
-                    if (winnerNumber!=PhotonNetwork.LocalPlayer.ActorNumber)
+                    if (winnerNumber != PhotonNetwork.LocalPlayer.ActorNumber)
                     {
                         //获取赢家星星位置
                         Vector2 pos = (Vector2)CustomProperties.GetPlayerProp("starPos", false);
@@ -226,6 +226,7 @@ public class GameManager : MonoBehaviourPunCallbacks
             GetPlayerState(1) == PlayerManager.PlayerState.Ready &&
             GetRoomState() == GameState.Idle)
         {
+            if(PhotonNetwork.IsMasterClient)
             CustomProperties.SetRoomProp("state", GameState.Round);
             StartNewRound();
         }
@@ -234,9 +235,11 @@ public class GameManager : MonoBehaviourPunCallbacks
     {
         //1.两位玩家都是<已放置星星>状态
         //2.若游戏状态为<回合内>，切换为<轮内>
+        //3.只有一方（如主机方），代表系统做出先手判断
         if (GetPlayerState(0) == PlayerManager.PlayerState.PlaceComplete &&
             GetPlayerState(1) == PlayerManager.PlayerState.PlaceComplete &&
-            GetRoomState() == GameState.Round)
+            GetRoomState() == GameState.Round &&
+            PhotonNetwork.IsMasterClient)
         {
             CustomProperties.SetRoomProp("state", GameState.Turn);
             TurnBegin();
@@ -340,26 +343,22 @@ public class GameManager : MonoBehaviourPunCallbacks
     }
     private void AllocateStar()
     {
-       players[CustomProperties.playerLocalIdx].PlaceStar();
+        players[CustomProperties.playerLocalIdx].PlaceStar();
     }//*
     public void TurnBegin()
     {
-        //只有一方（如主机方），代表系统做出先手判断
-        if (PhotonNetwork.IsMasterClient)
-        {
-            //设置当前数字为0
-            CustomProperties.SetRoomProp("nowNum", 0);
-            //分配先手玩家
-            DecideFirst();
-        }
+        //设置当前数字为0
+        CustomProperties.SetRoomProp("nowNum", 0);
+        //分配先手玩家
+        DecideFirst();
     }//*
     private void TurnFinish(int exceedPlayer)
     {
         //判断赢家及伤害值
         int winnerId = GetOtherPlayerId(exceedPlayer);
         int nowNum = (int)CustomProperties.GetRoomProp("nowNum");
-        
-        if(PhotonNetwork.IsMasterClient)
+
+        if (PhotonNetwork.IsMasterClient)
         {
             //将回合交给赢家
             CustomProperties.SetPlayerProp("state", PlayerManager.PlayerState.OthersTurn, exceedPlayer);
@@ -367,7 +366,7 @@ public class GameManager : MonoBehaviourPunCallbacks
             //进入海战棋Round
             CustomProperties.SetRoomProp("state", GameState.Round);
         }
-        
+
     }//*
     private void DealDamageFrom(int playerIdx, int dmg)
     {

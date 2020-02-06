@@ -47,7 +47,7 @@ public class Launcher : MonoBehaviourPunCallbacks
     }
     public override void OnConnectedToMaster()
     {
-        if(isConnecting)
+        if (isConnecting)
         {
             Debug.Log("OnConnectedToMaster() was called by PUN");
             PhotonNetwork.JoinRandomRoom();
@@ -82,4 +82,12 @@ public class Launcher : MonoBehaviourPunCallbacks
         }
     }
 
+    public void Quit()
+    {
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#else
+         Application.Quit();
+#endif
+    }
 }

@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 8756189013889469863}
   - component: {fileID: 7206172131948105086}
   - component: {fileID: 5050641110029437382}
+  - component: {fileID: 515122701}
   m_Layer: 0
   m_Name: num4
   m_TagString: Untagged
@@ -71,7 +72,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 4024008223042071464, guid: 6f743ffe5131e734a98012af17c3336d,
+  m_Sprite: {fileID: -193002242620685612, guid: c0336329b86ad83449460663168d6ecb,
     type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -95,5 +96,39 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 39ca746026f0de3498746b8f9f57781e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  targetPlayerId: 0
+  spriteDisable: {fileID: -193002242620685612, guid: c0336329b86ad83449460663168d6ecb,
+    type: 3}
+  spriteIdle: {fileID: -5198064801726466480, guid: cf202fda7322cdf488260754f3da0a2b,
+    type: 3}
+  spriteHover: {fileID: -8546201750114426729, guid: 8414de58b9641314e835dac342d25462,
+    type: 3}
+  spritePress: {fileID: -9089498913010214318, guid: 6ba9117b391d21e4eb66e372449b77e0,
+    type: 3}
+  tileState: 0
   value: 4
+--- !u!61 &515122701
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6265889576771908962}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0.5, y: 0.5}
+    oldSize: {x: 1, y: 1}
+    newSize: {x: 1, y: 1}
+    adaptiveTilingThreshold: 0.5
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  serializedVersion: 2
+  m_Size: {x: 1, y: 1}
+  m_EdgeRadius: 0

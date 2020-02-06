@@ -136,7 +136,7 @@ public class PlayerManager : MonoBehaviourPunCallbacks
                     //回调，将被点击方块改成受损
                     board.ChangeSprite(BoardScript.BoardState.Damaged);
                     //如果攻击完成
-                    if (myAmmos == 0)
+                    if (myAmmos <= 0)
                     {
                         //取消鼠标悬浮图标
                         Hover.Instance.Deactivate();
