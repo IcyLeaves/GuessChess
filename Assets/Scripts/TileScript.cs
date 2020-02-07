@@ -22,14 +22,18 @@ public class TileScript : MonoBehaviourPunCallbacks
 
     public int targetNumber;
 
-    private Transform parent;
+    private List<TileScript> tiles;
 
     private void Start()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
         tileState = TileState.Disable;
         targetNumber = PhotonNetwork.LocalPlayer.ActorNumber;
-        parent = transform.parent;
+        tiles = new List<TileScript>();
+        for (int i=0; i < transform.parent.childCount;i++)
+        {
+            tiles.Add(transform.parent.GetChild(i).GetComponent<TileScript>());
+        }
     }
     private void OnMouseOver()
     {
@@ -44,9 +48,9 @@ public class TileScript : MonoBehaviourPunCallbacks
         if (Input.GetMouseButtonUp(0) &&
             tileState !=TileState.Disable)
         {
-            for(int i=0;i< parent.childCount;i++)
+            foreach (var i in tiles)
             {
-                parent.GetChild(i).GetComponent<TileScript>().ChangeSprite(TileState.Disable);
+                i.ChangeSprite(TileState.Disable);
             }
             //调用客户端对应Player脚本 加数字 方法
             GameManager.Instance.players[CustomProperties.playerLocalIdx].AddNum(value);

@@ -14,6 +14,8 @@ public class GameManager : MonoBehaviourPunCallbacks
     public static GameManager Instance;
     public int goalNum = 20;
     public List<PlayerManager> players;
+    public List<SpriteRenderer> playerSprite;
+    public Sprite npcSprite;
     public BoardManager boardManager;
     public enum GameState
     {
@@ -23,8 +25,6 @@ public class GameManager : MonoBehaviourPunCallbacks
     public Text logText;
     public Text PlayerOneText;
     public Text PlayerTwoText;
-
-    private int nowNum;
 
     private void Start()
     {
@@ -53,6 +53,19 @@ public class GameManager : MonoBehaviourPunCallbacks
         if ((GameState)CustomProperties.GetRoomProp("state") == GameState.GameOver)
         {
             CustomProperties.SetRoomProp("state", GameState.Restart);
+        }
+    }
+
+    private void ChangeHeadImage()
+    {
+        int i = 0;
+        foreach(var player in PhotonNetwork.CurrentRoom.Players)
+        {
+            if(player.Value.NickName=="VIP")
+            {
+                playerSprite[i].sprite = npcSprite;
+            }
+            i++;
         }
     }
 
@@ -106,9 +119,8 @@ public class GameManager : MonoBehaviourPunCallbacks
                     int nowNum = (int)CustomProperties.GetRoomProp("nowNum");
                     if (targetPlayer.IsLocal)
                     {
-                        logText.text = "当前数字：" + nowNum + "/20" + "\n"
-                        + "请攻击" + (nowNum - goalNum) + "次";
-                        DealDamageFrom(targetPlayer.ActorNumber, nowNum - goalNum);
+                        
+                        DealDamageFrom(targetPlayer.ActorNumber, nowNum);
                     }
                     else
                     {
@@ -368,8 +380,11 @@ public class GameManager : MonoBehaviourPunCallbacks
         }
 
     }//*
-    private void DealDamageFrom(int playerIdx, int dmg)
+    private void DealDamageFrom(int playerIdx, int nowNum)
     {
+        int dmg = goalNum+6-nowNum;
+        logText.text = "当前数字：" + nowNum + "/20" + "\n"
+                        + "请攻击" + dmg + "次";
         players[CustomProperties.playerLocalIdx].Attack(dmg);
     }//*
 
@@ -407,8 +422,9 @@ public class GameManager : MonoBehaviourPunCallbacks
             PlayerOneText.text = CustomProperties.GetPlayerByIdx(0).NickName;
             PlayerTwoText.text = CustomProperties.GetPlayerByIdx(1).NickName;
             CustomProperties.SetLocalPlayerProp("state", PlayerManager.PlayerState.Idle);
-            logText.text = "请按下Start Game准备";
+            logText.text = "请按下Start准备";
         }
+        ChangeHeadImage();
     }//!
 
     #endregion
