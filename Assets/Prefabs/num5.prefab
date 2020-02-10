@@ -71,7 +71,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: -3729186646061951888, guid: 6f743ffe5131e734a98012af17c3336d,
+  m_Sprite: {fileID: 1723731680696250043, guid: c0336329b86ad83449460663168d6ecb,
     type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -95,5 +95,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 39ca746026f0de3498746b8f9f57781e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  targetPlayerId: 0
+  spriteDisable: {fileID: 1723731680696250043, guid: c0336329b86ad83449460663168d6ecb,
+    type: 3}
+  spriteIdle: {fileID: -5085506521050134857, guid: cf202fda7322cdf488260754f3da0a2b,
+    type: 3}
+  spriteHover: {fileID: 2743094519961759774, guid: 8414de58b9641314e835dac342d25462,
+    type: 3}
+  spritePress: {fileID: -8339802301536978464, guid: 6ba9117b391d21e4eb66e372449b77e0,
+    type: 3}
+  tileState: 0
   value: 5
+  targetNumber: 0

@@ -14,8 +14,6 @@ public class BoardManager : MonoBehaviour
     public Transform playerOneCornerPoint;
     public Transform playerTwoCornerPoint;
 
-    private Transform boardHolder;
-
     private void Start()
     {
         Instance = this;
@@ -27,7 +25,6 @@ public class BoardManager : MonoBehaviour
     /// </summary>
     void BoardSetup()
     {
-        boardHolder = new GameObject("Board").transform;
 
         for (int y = 0; y <rows; y++)
         {
@@ -65,7 +62,7 @@ public class BoardManager : MonoBehaviour
     public BoardScript GetPosBoard(int playerId, Vector2 pos)
     {
         Transform selectedBoard = playerId == 0 ? playerOneCornerPoint : playerTwoCornerPoint;
-        return selectedBoard.GetChild((int)(pos.x * cols + pos.y)).GetComponent<BoardScript>();
+        return selectedBoard.GetChild((int)(pos.y * cols + pos.x)).GetComponent<BoardScript>();
     }
     private List<BoardScript> SelectAllAlive(int playerId)
     {

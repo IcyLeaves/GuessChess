@@ -31,10 +31,10 @@ public class BoardScript : MonoBehaviour
     }
     private void OnMouseOver()
     {
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonUp(0))
         {
-            //调用当前本地玩家ID方法
-            GameManager.Instance.players[CustomProperties.playerLocalIdx].ClickGrid(this);
+            //调用[本地端.本地方]方法
+            GameManager.Instance.players[GameManager.Instance.localIdx].ClickGrid(this);
         }
     }
 
