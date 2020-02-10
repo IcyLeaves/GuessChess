@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 4202512860843075340}
   - component: {fileID: 3121051744528595387}
   m_Layer: 0
-  m_Name: Player1
+  m_Name: Player
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -94,4 +94,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 60a1e621967e415459c24a98fdb6ed24, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  myState: 1
+  myActorNumber: 0
+  myIdx: 0
+  myNickName: 
+  mySprite: {fileID: 0}
+  specialSprites:
+  - {fileID: 21300000, guid: 692c81823020f93429c12c3be8b5bf2f, type: 3}
+  - {fileID: 21300000, guid: a5bf45d0c0935aa40aec0ae45ba20194, type: 3}
+  - {fileID: 21300000, guid: effc4a2d9be8b6b43be8d814e6135592, type: 3}
+  myStarPos: {x: 0, y: 0}

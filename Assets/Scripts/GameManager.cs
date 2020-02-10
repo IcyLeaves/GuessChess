@@ -7,259 +7,31 @@ using Random = UnityEngine.Random;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using Hashtable = ExitGames.Client.Photon.Hashtable;
+using System;
 
 public class GameManager : MonoBehaviourPunCallbacks
 {
-
     public static GameManager Instance;
-    public int goalNum = 20;
     public List<PlayerManager> players;
-    public List<SpriteRenderer> playerSprite;
-    public Sprite npcSprite;
     public BoardManager boardManager;
-    public enum GameState
-    {
-        Idle, Round, Turn, GameOver, Restart
-    }
 
+    public int localIdx;//己方玩家idx
+    public int otherIdx;//敌方玩家idx
+    public int selectNum;//加数
+    public int nowSum;//累计值
+    public int goalNum;//阈值
+    public Vector2 attackPos;//攻击位置
+
+
+
+    public Button startBtn;
+    public List<SpriteRenderer> playerSprites;
+    public List<Text> playerTexts;
     public Text logText;
-    public Text PlayerOneText;
-    public Text PlayerTwoText;
+    public List<TileScript> tiles;
 
-    private void Start()
-    {
-        Instance = this;
-        Begin();
-    }
-
-    public int GetOtherPlayerId(int thisId)
-    {
-        int i;
-        for (i = 0; i < players.Count; i++)
-        {
-            if (players[i].myId == thisId)
-            {
-                break;
-            }
-        }
-        return players[(i + 1) % players.Count].myId;
-    }
-
-    #region UI
-
-    public void OnClickStartBtn()
-    {
-        //1.若游戏<结束>，则游戏<开始>
-        if ((GameState)CustomProperties.GetRoomProp("state") == GameState.GameOver)
-        {
-            CustomProperties.SetRoomProp("state", GameState.Restart);
-        }
-    }
-
-    private void ChangeHeadImage()
-    {
-        int i = 0;
-        foreach(var player in PhotonNetwork.CurrentRoom.Players)
-        {
-            if(player.Value.NickName=="VIP")
-            {
-                playerSprite[i].sprite = npcSprite;
-            }
-            i++;
-        }
-    }
-
-    #endregion
-
-    #region Prop
-
-    private PlayerManager.PlayerState GetPlayerState(int id)
-    {
-        return (PlayerManager.PlayerState)CustomProperties.GetPlayerProp("state", id);
-    }
-    public GameState GetRoomState()
-    {
-        return (GameState)CustomProperties.GetRoomProp("state");
-    }
-    public override void OnPlayerPropertiesUpdate(Player targetPlayer, Hashtable changedProps)
-    {
-        Debug.Log("[玩家属性改变]" + targetPlayer.NickName + "的" + changedProps);
-        object tempObj;
-        //[玩家状态]
-        if (changedProps.TryGetValue("state", out tempObj))
-        {
-            PlayerManager.PlayerState state = (PlayerManager.PlayerState)tempObj;
-            Player other = PhotonNetwork.CurrentRoom.Players[CustomProperties.playersNumber[CustomProperties.playerOtherIdx]];
-            switch (state)
-            {
-                case PlayerManager.PlayerState.Ready:
-                    if (targetPlayer.IsLocal)
-                    {
-                        logText.text = "等待" + other.NickName + "准备";
-                    }
-                    SyncReady();
-                    break;
-                case PlayerManager.PlayerState.PlaceStar:
-                    logText.text = "请放置星星";
-                    break;
-                case PlayerManager.PlayerState.PlaceComplete:
-                    if (targetPlayer.IsLocal)
-                    {
-                        logText.text = "等待" + other.NickName + "放置星星";
-                    }
-                    SyncPlaceStar();
-                    break;
-                case PlayerManager.PlayerState.ChooseNumbers:
-                    if (targetPlayer.IsLocal)
-                    {
-                        logText.text = "请选择数字";
-                    }
-                    break;
-                case PlayerManager.PlayerState.Attack:
-                    int nowNum = (int)CustomProperties.GetRoomProp("nowNum");
-                    if (targetPlayer.IsLocal)
-                    {
-                        
-                        DealDamageFrom(targetPlayer.ActorNumber, nowNum);
-                    }
-                    else
-                    {
-                        logText.text = "当前数字：" + nowNum + "/20" + "\n"
-                        + targetPlayer.NickName + "正在攻击";
-                    }
-                    break;
-                case PlayerManager.PlayerState.OthersTurn:
-                    if (targetPlayer.IsLocal)
-                    {
-                        logText.text = "等待" + other.NickName + "操作";
-                    }
-                    break;
-                default:
-                    break;
-            }
-        }
-        //[玩家星星位置]
-        if (changedProps.TryGetValue("starPos", out tempObj))
-        {
-            Vector2 starPos = (Vector2)tempObj;
-        }
-        //[玩家所选数字]
-        if (changedProps.TryGetValue("num", out tempObj))
-        {
-            int num = (int)tempObj;
-            //裁判方累积数字
-            if (PhotonNetwork.IsMasterClient)
-            {
-                //累积后判断是否爆掉
-                if (AddNowNum(num, targetPlayer.ActorNumber))
-                {
-                    //爆掉设置房间属性[爆掉的玩家Number]
-                    CustomProperties.SetRoomProp("exceedPlayer", targetPlayer.ActorNumber);
-                }
-                else
-                {
-                    //没爆掉就正常结束Turn
-                    OnCompleteTurn();
-                }
-
-            }
-
-        }
-        //[玩家攻击方块]
-        if (changedProps.TryGetValue("attackPos", out tempObj))
-        {
-            Vector2 attackPos = (Vector2)tempObj;
-            //1.来自另一方的攻击
-            if (!targetPlayer.IsLocal)
-            {
-                //获取受到攻击的方块
-                BoardScript board = boardManager.GetPosBoard(CustomProperties.playerLocalIdx, attackPos);
-                //如果攻击到了星星
-                if (attackPos == (Vector2)CustomProperties.GetPlayerProp("starPos"))
-                {
-                    //回调，将被点击方块改成受损星星
-                    board.ChangeSprite(BoardScript.BoardState.DamagedStar);
-                    return;
-                }
-                //将被点击方块改成受损
-                board.ChangeSprite(BoardScript.BoardState.Damaged);
-            }
-        }
-    }
-    public override void OnRoomPropertiesUpdate(Hashtable propertiesThatChanged)
-    {
-        object tempObj;
-        Debug.Log("[房间属性改变]" + propertiesThatChanged);
-        //[房间当前数字是否爆掉]
-        if (propertiesThatChanged.TryGetValue("exceedPlayer", out tempObj))
-        {
-            int exceedPlayer = (int)tempObj;
-            //如果爆掉了，就游戏结束
-            TurnFinish(exceedPlayer);
-        }
-        //[房间状态]
-        if (propertiesThatChanged.TryGetValue("state", out tempObj))
-        {
-            GameState state = (GameState)tempObj;
-            switch (state)
-            {
-                case GameState.Restart:
-                    Restart();
-                    break;
-                case GameState.GameOver:
-                    int winnerNumber = (int)CustomProperties.GetRoomProp("winnerNumber");
-                    logText.text = "赢家是：" + PhotonNetwork.CurrentRoom.Players[winnerNumber].NickName;
-                    //1.赢家是对方才需公开
-                    if (winnerNumber != PhotonNetwork.LocalPlayer.ActorNumber)
-                    {
-                        //获取赢家星星位置
-                        Vector2 pos = (Vector2)CustomProperties.GetPlayerProp("starPos", false);
-                        //获取赢家星星的方块
-                        BoardScript board = boardManager.GetPosBoard(CustomProperties.playerOtherIdx, pos);
-                        //公开赢家的星星位置
-                        board.ChangeSprite(BoardScript.BoardState.Star);
-                    }
-                    break;
-                default:
-                    break;
-            }
-        }
-    }
-
-    #endregion
-
-    #region Sync
-
-    public void SyncReady()
-    {
-        //1.两位玩家都是<已准备>状态
-        //2.若游戏状态为<闲置>，切换为<回合内>
-        if (GetPlayerState(0) == PlayerManager.PlayerState.Ready &&
-            GetPlayerState(1) == PlayerManager.PlayerState.Ready &&
-            GetRoomState() == GameState.Idle)
-        {
-            if(PhotonNetwork.IsMasterClient)
-            CustomProperties.SetRoomProp("state", GameState.Round);
-            StartNewRound();
-        }
-    }
-    public void SyncPlaceStar()
-    {
-        //1.两位玩家都是<已放置星星>状态
-        //2.若游戏状态为<回合内>，切换为<轮内>
-        //3.只有一方（如主机方），代表系统做出先手判断
-        if (GetPlayerState(0) == PlayerManager.PlayerState.PlaceComplete &&
-            GetPlayerState(1) == PlayerManager.PlayerState.PlaceComplete &&
-            GetRoomState() == GameState.Round &&
-            PhotonNetwork.IsMasterClient)
-        {
-            CustomProperties.SetRoomProp("state", GameState.Turn);
-            TurnBegin();
-        }
-    }
-
-    #endregion
-
+    public int currentPlayerIdx;
+    public Dictionary<string, object> tmpData;//若属性改变快于代码执行，则将数据缓存至此
     #region Lobby
 
     public override void OnLeftRoom()
@@ -302,130 +74,391 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     #endregion
 
-    //心理战游戏
-    #region Turn
-
-    public void OnCompleteTurn()
+    private void Start()
     {
-        //将回合交给下一位
-        ChangeTurnToNext();
+        Instance = this;
+        StartCoroutine(MainProcess());
     }
-    public bool AddNowNum(int val, int playerId)
+    IEnumerator MainProcess()
     {
-        int nowNum = (int)CustomProperties.GetRoomProp("nowNum");
-        nowNum += val;
-        CustomProperties.SetRoomProp("nowNum", nowNum);
-        Debug.Log("nowNum is " + nowNum);
-        //判断当前数字有没有爆掉
-        return IsNowNumExceed();
-    }//!
-    private void ChangeTurnToNext()
-    {
-        //将当前玩家序号递增一位
-        int currentIdx = (int)CustomProperties.GetRoomProp("currentPlayer");
-        CustomProperties.SetRoomProp("currentPlayer", GetOtherPlayerId(currentIdx));
-    }
-    private void ChangeTurnTo(int playerNumber)
-    {
-        CustomProperties.SetRoomProp("currentPlayer", playerNumber);
-    }
-    private bool IsNowNumExceed()
-    {
-        //如果当前数字大于目标数，那就爆掉了
-        if ((int)CustomProperties.GetRoomProp("nowNum") > goalNum)
+        InitScene();//场景初始化
+        yield return new WaitUntil(SyncReady);//等待双方玩家准备
+        PlaceStars();//玩家放置星星
+        yield return new WaitUntil(SyncPlaceComplete);//等待双方放置星星完毕
+        //<回合>开始
+        int round = 0;//清空回合数
+        int roundWinnerIdx = -1;//回合获胜者idx
+        while (true)
         {
-            return true;
+            round++;//回合数+1
+            currentPlayerIdx = -1;//还未决定先手玩家
+            DecideFirst();//决定先手玩家
+            yield return new WaitUntil(() => currentPlayerIdx >= 0);//等待先手玩家被分配
+            //<轮次>开始
+            int turn = 0;//清空轮数
+            int turnWinnerIdx = -1;//轮次获胜者idx
+            int ammos = -1;//弹药数
+            nowSum = 0;//清空累计值
+            while (true)
+            {
+                turn++;//轮数+1
+                selectNum = -1;//玩家还未选择加数
+                ChooseNumbers();//玩家选择加数
+                yield return new WaitUntil(() => selectNum >= 0);//等待玩家选择数字
+                AddToNowSum();//累计值更新
+                if (IsTurnContinue())//若轮次还将继续
+                {
+                    NextTurn();//一轮结束，移交轮次控制权
+                }
+                else//若轮次停止循环
+                {
+                    turnWinnerIdx = SetTurnWinner();//决出轮次赢家
+                    ammos = SetAmmos();//计算弹药
+                    break;//结束<轮次>循环
+                }
+            }
+            //<攻击>开始
+            int restAmmos = ammos;//剩余弹药设置为弹药数
+            while (true)
+            {
+                attackPos = new Vector2(-1, -1);//玩家还未攻击
+                WinnerAttackOnce(turnWinnerIdx, restAmmos, ammos);//赢家进行一次攻击
+                yield return new WaitUntil(() => attackPos != new Vector2(-1, -1));//等待赢家选择攻击坐标
+                AttackBoard(turnWinnerIdx);//发起攻击
+                restAmmos--;//剩余弹药-1
+                if (restAmmos <= 0 || IsGameOver())//如果游戏结束或子弹用完，则不必再继续攻击
+                {
+                    AttackOver();
+                    break;
+                }
+            }
+            if (IsGameOver())//如果游戏结束
+            {
+                roundWinnerIdx = SetRoundWinner();//决出回合赢家
+                break;
+            }
+            else { }//不然继续循环<回合>
         }
-        return false;
+        InitGameOver(roundWinnerIdx);//显示游戏结束画面
+        yield return new WaitForSeconds(5f);//等待5s
+        RestartGame();//重新开始游戏
+        yield break;
     }
+
+
+
+    public override void OnRoomPropertiesUpdate(Hashtable propertiesThatChanged)
+    {
+        object tempObj;
+        //[轮次控制者]
+        if (propertiesThatChanged.TryGetValue("currentPlayer", out tempObj))
+        {
+            if (currentPlayerIdx == -1)
+                currentPlayerIdx = (int)tempObj;
+            else
+                tmpData["currentPlayer"] = tempObj;
+
+        }
+
+    }
+    public override void OnPlayerPropertiesUpdate(Player targetPlayer, Hashtable changedProps)
+    {
+        object tempObj;
+        //[所选数字]
+        if (changedProps.TryGetValue("selectNum", out tempObj))
+        {
+            if (selectNum == -1)
+                selectNum = (int)tempObj;
+            else
+                tmpData["selectNum"] = tempObj;
+        }
+        //[攻击坐标]
+        if (changedProps.TryGetValue("attackPos", out tempObj))
+        {
+            if (attackPos == new Vector2(-1, -1))
+                attackPos = (Vector2)tempObj;
+            else
+                tmpData["attackPos"] = tempObj;
+        }
+    }
+
+    private bool SyncPlayerState(PlayerManager.PlayerState state)
+    {
+        return players[0].myState == state && players[1].myState == state;
+    }
+
+    #region InitScene
+    private void InitScene()
+    {
+        InitialPlayerInfo();
+        InitializeUi();
+        InitialData();
+    }
+    private void InitialPlayerInfo()
+    {
+        //根据服务器玩家的信息更新Player信息
+        players[0].InitInfo();
+        players[1].InitInfo();
+        //判断本地玩家
+        localIdx = PhotonNetwork.IsMasterClient ? 0 : 1;
+        otherIdx = 1 - localIdx;
+    }
+    private void InitializeUi()
+    {
+        //根据玩家信息更新玩家UI
+        for (int i = 0; i < players.Count; i++)
+        {
+            //玩家昵称
+            playerTexts[i].text = players[i].myNickName;
+            //玩家头像
+            playerSprites[i].sprite = players[i].mySprite;
+        }
+        //更新场景文本
+        logText.text = "请按下Start准备";
+        //开放Start按钮
+        startBtn.interactable = true;
+    }
+    private void InitialData()
+    {
+        tmpData=new Dictionary<string, object>();
+        tmpData["currentPlayer"] = -1;
+        tmpData["selectNum"] = -1;
+        tmpData["attackPos"] = new Vector2(-1, -1);
+
+        currentPlayerIdx = 0;
+        selectNum = 0;
+        attackPos = Vector2.zero;
+    }
+    #endregion
+
+    #region SyncReady
+    private bool SyncReady()
+    {
+        if (players[localIdx].myState == PlayerManager.PlayerState.Ready)
+        {
+            logText.text = "等待" + players[otherIdx].myNickName + "准备";
+        }
+        return SyncPlayerState(PlayerManager.PlayerState.Ready);
+    }
+    public void OnStartBtnClick()
+    {
+        //禁闭Start按钮
+        startBtn.interactable = false;
+        //按下准备按钮，则使[本地端.本地方]和[远程端.本地方]准备。
+        CustomProperties.SetLocalState(PlayerManager.PlayerState.Ready);
+        players[localIdx].myState = PlayerManager.PlayerState.Ready;
+
+    }
+    #endregion
+
+    #region PlaceStars
+    private void PlaceStars()
+    {
+        logText.text = "请放置星星";
+        players[0].PlaceStar();
+        players[1].PlaceStar();
+    }
+    #endregion
+
+    #region SyncPlaceComplete
+    private bool SyncPlaceComplete()
+    {
+        if (players[localIdx].myState == PlayerManager.PlayerState.PlaceComplete)
+        {
+            logText.text = "等待" + players[otherIdx].myNickName + "放置";
+        }
+        return SyncPlayerState(PlayerManager.PlayerState.PlaceComplete);
+    }
+    #endregion
+
+    #region DecideFirst
     private void DecideFirst()
     {
-        CustomProperties.SetRoomProp("currentPlayer", CustomProperties.playersNumber[Random.Range(0, 2)]);
-    }
-
-    #endregion
-
-    //海战棋
-    #region Round
-
-    private void StartNewRound()
-    {
-        //开始一个新的游戏，首先分配星星
-        AllocateStar();
-    }
-    private void AllocateStar()
-    {
-        players[CustomProperties.playerLocalIdx].PlaceStar();
-    }//*
-    public void TurnBegin()
-    {
-        //设置当前数字为0
-        CustomProperties.SetRoomProp("nowNum", 0);
-        //分配先手玩家
-        DecideFirst();
-    }//*
-    private void TurnFinish(int exceedPlayer)
-    {
-        //判断赢家及伤害值
-        int winnerId = GetOtherPlayerId(exceedPlayer);
-        int nowNum = (int)CustomProperties.GetRoomProp("nowNum");
-
+        logText.text = "正在决定先手玩家";
+        //1.只有[主机端]才有决定房间属性的权利
         if (PhotonNetwork.IsMasterClient)
         {
-            //将回合交给赢家
-            CustomProperties.SetPlayerProp("state", PlayerManager.PlayerState.OthersTurn, exceedPlayer);
-            CustomProperties.SetPlayerProp("state", PlayerManager.PlayerState.Attack, winnerId);
-            //进入海战棋Round
-            CustomProperties.SetRoomProp("state", GameState.Round);
+            int res = Random.Range(0, 2);
+            CustomProperties.SetRoomProp("currentPlayer", res);
         }
+        //如果有缓存数据
+        if ((int)tmpData["currentPlayer"] >= 0)
+        {
+            //那么使用缓存
+            currentPlayerIdx = (int)tmpData["currentPlayer"];
+            //随后清空以备下一次接收
+            tmpData["currentPlayer"] = -1;
+        }
+    }
+    #endregion
 
-    }//*
-    private void DealDamageFrom(int playerIdx, int nowNum)
+    #region ChooseNumbers
+    private void ChooseNumbers()
     {
-        int dmg = goalNum+6-nowNum;
-        logText.text = "当前数字：" + nowNum + "/20" + "\n"
-                        + "请攻击" + dmg + "次";
-        players[CustomProperties.playerLocalIdx].Attack(dmg);
-    }//*
+        //无论是[本地端]还是[远程端]都会调用
+        players[currentPlayerIdx].ChooseNum();
+        //[currentPlayerIdx]为<轮次>控制方
+        if (currentPlayerIdx == localIdx)//如果是[本地端.本地方]
+        {
+            logText.text = "请选择加数";
+            //启用加数按钮
+            foreach (var tile in tiles)
+            {
+                tile.ChangeSprite(TileScript.TileState.Enable);
+            }
+        }
+        else//如果是[本地端.对方]
+        {
+            logText.text = "等待" + players[otherIdx].myNickName + "选择加数";
+        }
+        //如果有缓存数据
+        if ((int)tmpData["selectNum"] >= 0)
+        {
+            //那么使用缓存
+            selectNum = (int)tmpData["selectNum"];
+            //随后清空以备下一次接收
+            tmpData["selectNum"] = -1;
+        }
+    }
+    #endregion
+
+    #region AddToNowSum
+    private void AddToNowSum()
+    {
+        Debug.Log("[累计值]" + nowSum + "+" + players[currentPlayerIdx].myNickName + "." + selectNum + "=" + (nowSum + selectNum));
+        nowSum += selectNum;
+
+    }
+    #endregion
+
+    #region IsTurnContinue
+    private bool IsTurnContinue()
+    {
+        return nowSum <= goalNum;
+    }
+    #endregion
+
+    #region NextTurn
+    private void NextTurn()
+    {
+        currentPlayerIdx = 1 - currentPlayerIdx;
+    }
+    #endregion
+
+    #region SetTurnWinner
+    private int SetTurnWinner()
+    {
+        return 1 - currentPlayerIdx;
+    }
+    #endregion
+
+    #region SetAmmos
+    private int SetAmmos()
+    {
+        return 6 - (nowSum - goalNum);
+    }
+    #endregion
+
+    #region WinnerAttackOnce
+    private void WinnerAttackOnce(int winnerIdx, int restAmmos, int ammos)
+    {
+        //无论是[本地端]还是[远程端]都会调用
+        players[winnerIdx].Attack();
+        //[winnerIdx]为攻击方
+        if (winnerIdx == localIdx)//如果是[本地端.本地方]
+        {
+            logText.text = "当前累计值：" + nowSum + "/" + goalNum + "\n" +
+                "你共有" + ammos + "发弹药，还剩" + restAmmos + "发";
+        }
+        else//如果是[本地端.对方]
+        {
+            logText.text = "当前累计值：" + nowSum + "/" + goalNum + "\n" +
+                "等待" + players[otherIdx].myNickName + "攻击";
+        }
+        //如果有缓存数据
+        if ((Vector2)tmpData["attackPos"] !=new Vector2(-1,-1))
+        {
+            //那么使用缓存
+            attackPos = (Vector2)tmpData["attackPos"];
+            //随后清空以备下一次接收
+            tmpData["attackPos"] = new Vector2(-1, -1);
+        }
+    }
+    #endregion
+
+    #region AttackBoard
+    private void AttackBoard(int attackerIdx)
+    {
+        //获取[被攻击者]idx
+        int ruinedIdx = 1 - attackerIdx;
+        //获取[被攻击者]面板的攻击坐标的方块
+        BoardScript board = boardManager.GetPosBoard(ruinedIdx, attackPos);
+        //如果攻击到了星星
+        if (board.gridPos.pos == players[ruinedIdx].myStarPos)
+        {
+            //回调，将被点击方块改成受损星星
+            board.ChangeSprite(BoardScript.BoardState.DamagedStar);
+            //[被攻击者].HP-1
+            players[ruinedIdx].myHp--;
+            //取消鼠标悬浮图标
+            Hover.Instance.Deactivate();
+            return;
+        }
+        //回调，将被点击方块改成受损
+        board.ChangeSprite(BoardScript.BoardState.Damaged);
+    }
+    #endregion
+
+    #region IsGameOver
+    private bool IsGameOver()
+    {
+        return players[0].myHp == 0 || players[1].myHp == 0;
+    }
+    #endregion
+
+    #region AttackOver
+    private void AttackOver()
+    {
+        //取消鼠标悬浮图标
+        Hover.Instance.Deactivate();
+    }
+    #endregion
+
+    #region SetRoundWinner
+    private int SetRoundWinner()
+    {
+        if (players[0].myHp > 0)
+            return 0;
+        if (players[1].myHp > 0)
+            return 1;
+        return -1;
+    }
 
     #endregion
 
-    #region Game
+    #region InitGameOver
+    private void InitGameOver(int winnerIdx)
+    {
+        //公布赢家
+        logText.text = "赢家是：" + players[winnerIdx].myNickName;
+        //公开星星位置
+        for (int i = 0; i < 2; i++)
+        {
+            Vector2 starPos = players[i].myStarPos;
+            BoardScript board = boardManager.GetPosBoard(i, starPos);
+            if (board.boardState == BoardScript.BoardState.Nothing)
+            {
+                board.ChangeSprite(BoardScript.BoardState.Star);
+            }
+        }
+    }
+    #endregion
 
-    public void Restart()
+    #region RestartGame
+    private void RestartGame()
     {
         LoadArena();
     }
-    public void Over(int winnerNumber)
-    {
-        CustomProperties.SetRoomProp("winnerNumber", winnerNumber);
-        CustomProperties.SetRoomProp("state", GameState.GameOver);
-    }//*
-    public void Begin()
-    {
-        //游戏初始态
-        CustomProperties.SetRoomProp("state", GameState.Idle);
-        //分配玩家idx
-        CustomProperties.SetPlayers();
-        players[0].myId = CustomProperties.playersNumber[0];
-        players[1].myId = CustomProperties.playersNumber[1];
-        //设置游戏场景
-        if (PhotonNetwork.CurrentRoom.PlayerCount == 1)
-        {
-            if (PlayerOneText == null) Debug.LogWarning("Missing PlayerOneText");
-            PlayerOneText.text = CustomProperties.GetPlayerByIdx(0).NickName;
-        }
-        if (PhotonNetwork.CurrentRoom.PlayerCount == 2)
-        {
-            if (PlayerOneText == null) Debug.LogWarning("Missing PlayerOneText");
-            if (PlayerTwoText == null) Debug.LogWarning("Missing PlayerTwoText");
-            PlayerOneText.text = CustomProperties.GetPlayerByIdx(0).NickName;
-            PlayerTwoText.text = CustomProperties.GetPlayerByIdx(1).NickName;
-            CustomProperties.SetLocalPlayerProp("state", PlayerManager.PlayerState.Idle);
-            logText.text = "请按下Start准备";
-        }
-        ChangeHeadImage();
-    }//!
-
     #endregion
+
 }

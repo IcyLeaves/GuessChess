@@ -20,20 +20,11 @@ public class TileScript : MonoBehaviourPunCallbacks
     public TileState tileState;
     public int value;
 
-    public int targetNumber;
-
-    private List<TileScript> tiles;
 
     private void Start()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
-        tileState = TileState.Disable;
-        targetNumber = PhotonNetwork.LocalPlayer.ActorNumber;
-        tiles = new List<TileScript>();
-        for (int i=0; i < transform.parent.childCount;i++)
-        {
-            tiles.Add(transform.parent.GetChild(i).GetComponent<TileScript>());
-        }
+        tileState = TileState.Disable;//初始不可按
     }
     private void OnMouseOver()
     {
@@ -46,14 +37,16 @@ public class TileScript : MonoBehaviourPunCallbacks
         //1.左键松开
         //2.此按钮为可点击状态
         if (Input.GetMouseButtonUp(0) &&
-            tileState !=TileState.Disable)
+            tileState!=TileState.Disable)
         {
-            foreach (var i in tiles)
+            //禁用数字按钮
+            ChangeSprite(TileState.Disable);
+            foreach(var tile in GameManager.Instance.tiles)
             {
-                i.ChangeSprite(TileState.Disable);
+                tile.ChangeSprite(TileState.Disable);
             }
-            //调用客户端对应Player脚本 加数字 方法
-            GameManager.Instance.players[CustomProperties.playerLocalIdx].AddNum(value);
+            //调用[本地端.本地方]的重载ChooseNumber
+            GameManager.Instance.players[GameManager.Instance.localIdx].ChooseNum(value);
         }
     }
     private void OnMouseExit()
@@ -61,26 +54,6 @@ public class TileScript : MonoBehaviourPunCallbacks
         ChangeSprite(TileState.Idle);
     }
 
-    public override void OnPlayerPropertiesUpdate(Player targetPlayer, Hashtable changedProps)
-    {
-        //1.按钮的激活与否只跟自己的状态有关
-        if (targetPlayer.ActorNumber != targetNumber) return;
-        object tempObj;
-        //[玩家状态]
-        if (changedProps.TryGetValue("state", out tempObj))
-        {
-            PlayerManager.PlayerState state = (PlayerManager.PlayerState)tempObj;
-            switch (state)
-            {
-                case PlayerManager.PlayerState.ChooseNumbers:
-                        ChangeSprite(TileState.Enable);
-                    break;
-                default:
-                    ChangeSprite(TileState.Disable);
-                    break;
-            }
-        }
-    }
     public void ChangeSprite(TileState state)
     {
         switch (state)

@@ -14,8 +14,6 @@ public class BoardManager : MonoBehaviour
     public Transform playerOneCornerPoint;
     public Transform playerTwoCornerPoint;
 
-    private Transform boardHolder;
-
     private void Start()
     {
         Instance = this;
@@ -27,7 +25,6 @@ public class BoardManager : MonoBehaviour
     /// </summary>
     void BoardSetup()
     {
-        boardHolder = new GameObject("Board").transform;
 
         for (int y = 0; y <rows; y++)
         {
