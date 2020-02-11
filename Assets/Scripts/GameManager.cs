@@ -29,6 +29,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     public List<Text> playerTexts;
     public Text logText;
     public List<TileScript> tiles;
+    public Text turnText;
 
     public int currentPlayerIdx;
     public Dictionary<string, object> tmpData;//若属性改变快于代码执行，则将数据缓存至此
@@ -90,7 +91,7 @@ public class GameManager : MonoBehaviourPunCallbacks
         int roundWinnerIdx = -1;//回合获胜者idx
         while (true)
         {
-            round++;//回合数+1
+            round++; turnText.text = "第 "+round+" 回合   第 1 轮";//回合数+1
             currentPlayerIdx = -1;//还未决定先手玩家
             DecideFirst();//决定先手玩家
             yield return new WaitUntil(() => currentPlayerIdx >= 0);//等待先手玩家被分配
@@ -101,7 +102,7 @@ public class GameManager : MonoBehaviourPunCallbacks
             nowSum = 0;//清空累计值
             while (true)
             {
-                turn++;//轮数+1
+                turn++; turnText.text = "第 " + round + " 回合   第 " +turn+ " 轮";//轮数+1
                 selectNum = -1;//玩家还未选择加数
                 ChooseNumbers();//玩家选择加数
                 yield return new WaitUntil(() => selectNum >= 0);//等待玩家选择数字
@@ -126,9 +127,9 @@ public class GameManager : MonoBehaviourPunCallbacks
                 yield return new WaitUntil(() => attackPos != new Vector2(-1, -1));//等待赢家选择攻击坐标
                 AttackBoard(turnWinnerIdx);//发起攻击
                 restAmmos--;//剩余弹药-1
-                if (restAmmos <= 0 || IsGameOver())//如果游戏结束或子弹用完，则不必再继续攻击
+                if (restAmmos <= 0 || IsGameOver())//如果游戏结束或子弹用完
                 {
-                    AttackOver();
+                    AttackOver();//则停止循环，攻击结束
                     break;
                 }
             }
@@ -220,7 +221,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     }
     private void InitialData()
     {
-        tmpData=new Dictionary<string, object>();
+        tmpData = new Dictionary<string, object>();
         tmpData["currentPlayer"] = -1;
         tmpData["selectNum"] = -1;
         tmpData["attackPos"] = new Vector2(-1, -1);
@@ -373,10 +374,10 @@ public class GameManager : MonoBehaviourPunCallbacks
         else//如果是[本地端.对方]
         {
             logText.text = "当前累计值：" + nowSum + "/" + goalNum + "\n" +
-                "等待" + players[otherIdx].myNickName + "攻击";
+                "等待" + players[otherIdx].myNickName + "攻击，还剩"+restAmmos+"发";
         }
         //如果有缓存数据
-        if ((Vector2)tmpData["attackPos"] !=new Vector2(-1,-1))
+        if ((Vector2)tmpData["attackPos"] != new Vector2(-1, -1))
         {
             //那么使用缓存
             attackPos = (Vector2)tmpData["attackPos"];
@@ -421,6 +422,8 @@ public class GameManager : MonoBehaviourPunCallbacks
     {
         //取消鼠标悬浮图标
         Hover.Instance.Deactivate();
+        //清除本地的攻击坐标缓存，以防影响下次攻击
+        tmpData["attackPos"] = new Vector2(-1, -1);
     }
     #endregion
 

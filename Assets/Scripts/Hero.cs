@@ -8,26 +8,31 @@ public class Hero : MonoBehaviour
 {
     public Sprite heroSprite;
 
-    public void SkillTrigger(string state)
+    public void SkillTrigger(string hero)
     {
-        switch(state)
+        switch(hero)
         {
-            case "My":
+            case "EYXJ":
+                EYXJ();
                 break;
         }
     }
 
     #region 厄运小姐
 
+    public void EYXJ()
+    {
+        EYXJ_RandomQuests();
+    }
     public int[] EYXJ_RandomQuests()
     {
         List<int> numbers = new List<int>() { 0, 1, 2, 3, 4 };
         int[] quests = new int[5];
-        for(int i=0;i<numbers.Count;i++)
+        for(int i=0;i<quests.Length;i++)
         {
-            int num = numbers[i];//选出要放入箱子的数字
-            int questIdx = Random.Range(0,numbers.Count);//选出要放入哪个箱子
-            quests[questIdx] = num;//放入
+            int numIdx = Random.Range(0, numbers.Count);//选出取出哪个数字
+            quests[i] = numbers[numIdx];//放入
+            numbers.RemoveAt(numIdx);//去除这个数字
         }
         return quests;
     }
