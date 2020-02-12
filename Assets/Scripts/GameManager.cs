@@ -12,24 +12,24 @@ using System;
 public class GameManager : MonoBehaviourPunCallbacks
 {
     public static GameManager Instance;
-    public List<PlayerManager> players;
-    public BoardManager boardManager;
-
     public int localIdx;//己方玩家idx
     public int otherIdx;//敌方玩家idx
+
     public int selectNum;//加数
     public int nowSum;//累计值
     public int goalNum;//阈值
     public Vector2 attackPos;//攻击位置
 
-
-
+    public List<PlayerManager> players;
+    public BoardManager boardManager;
     public Button startBtn;
     public List<SpriteRenderer> playerSprites;
     public List<Text> playerTexts;
     public Text logText;
     public List<TileScript> tiles;
     public Text turnText;
+    public GameObject heroCardPanel;
+    public List<GameObject> heroIcons;
 
     public int currentPlayerIdx;
     public Dictionary<string, object> tmpData;//若属性改变快于代码执行，则将数据缓存至此
@@ -84,6 +84,9 @@ public class GameManager : MonoBehaviourPunCallbacks
     {
         InitScene();//场景初始化
         yield return new WaitUntil(SyncReady);//等待双方玩家准备
+        SelectHero();//玩家选择英雄
+        yield return new WaitUntil(SyncHeroCardSelected);//等待双方选完英雄
+        ShowBoard();//显示棋盘
         PlaceStars();//玩家放置星星
         yield return new WaitUntil(SyncPlaceComplete);//等待双方放置星星完毕
         //<回合>开始
@@ -145,7 +148,6 @@ public class GameManager : MonoBehaviourPunCallbacks
         RestartGame();//重新开始游戏
         yield break;
     }
-
 
 
     public override void OnRoomPropertiesUpdate(Hashtable propertiesThatChanged)
@@ -249,6 +251,50 @@ public class GameManager : MonoBehaviourPunCallbacks
         CustomProperties.SetLocalState(PlayerManager.PlayerState.Ready);
         players[localIdx].myState = PlayerManager.PlayerState.Ready;
 
+    }
+    #endregion
+
+    #region HeroCardPanelInit
+    private void SelectHero()
+    {
+        HeroCardPanelInit();//打开英雄面板
+    }
+    private void HeroCardPanelInit()
+    {
+        //生成英雄卡片
+        heroCardPanel.SetActive(true);//显示Panel
+    }
+    #endregion
+
+    #region SyncHeroCardSelected
+    private bool SyncHeroCardSelected()
+    {
+        if (players[localIdx].myHeroId>=0)
+        {
+            logText.text = "等待" + players[otherIdx].myNickName + "选择英雄";
+        }
+        return players[0].myHeroId>=0 && players[1].myHeroId>=0;
+    }
+    public void OnHeroCardClick(int val)
+    {
+        heroCardPanel.SetActive(false);//关闭Panel
+        players[localIdx].SelectHero(val);
+    }
+    #endregion
+
+    #region ShowBoard
+    private void ShowBoard()
+    {
+        //显示棋盘
+        boardManager.playerOneCornerPoint.gameObject.SetActive(true);
+        boardManager.playerTwoCornerPoint.gameObject.SetActive(true);
+        //显示头像
+        for(int i=0;i<heroIcons.Count;i++)
+        {
+            var g = Instantiate(HeroManager.Instance.heroIconPrefabs[players[i].myHeroId]);
+            g.transform.SetParent(heroIcons[i].transform);
+            g.transform.localPosition = Vector3.zero;
+        }
     }
     #endregion
 

@@ -4,10 +4,17 @@ using System.Collections.Generic;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-public class Hero : MonoBehaviour
+public class HeroManager : MonoBehaviour
 {
+    public static HeroManager Instance;
     public Sprite heroSprite;
+    public GameObject[] heroIconPrefabs;
+    public GameObject[] heroCardPrefabs;
 
+    private void Start()
+    {
+        Instance = this;
+    }
     public void SkillTrigger(string hero)
     {
         switch(hero)

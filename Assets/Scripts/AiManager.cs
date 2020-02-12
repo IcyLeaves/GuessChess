@@ -8,6 +8,7 @@ public class AiManager : PlayerManager
     public override void InitInfo()
     {
         myHp = 0;
+        myHeroId = Random.Range(0,3);
         myIdx = 1;
         myActorNumber = -1;
         myNickName = "Enemy";
@@ -27,7 +28,6 @@ public class AiManager : PlayerManager
         myState = PlayerState.PlaceComplete;
         myHp++;
     }
-
 
     public override void ChooseNum()
     {
