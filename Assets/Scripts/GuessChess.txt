@@ -12,9 +12,8 @@
 
 
 -  重构gamemanager players，只引用gameobject而不是各个组件
--  设计半透明Panel，并提供显示/隐藏功能
+
 -  右键Btn可以查看大图
--  Start后插入选英雄阶段
 -  设置SkillTrigger
 -  Hover图层最顶端
--  CardPanel完成。可以从英雄卡中随机挑选三张供玩家选择。
+

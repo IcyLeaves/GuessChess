@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class HeroIconScript : MonoBehaviour
 {
@@ -28,14 +29,16 @@ public class HeroIconScript : MonoBehaviour
     {
         ChangeSprite(IconState.Hover);
         //左键按下
-        if (Input.GetMouseButton(0))
+        if (Input.GetMouseButton(0) && EventSystem.current.IsPointerOverGameObject() == false)
         {
             ChangeSprite(IconState.Press);
         }
         //1.左键松开
         //2.此按钮为可点击状态
+        //3.没点到UI
         if (Input.GetMouseButtonUp(0) &&
-            iconState != IconState.Disable)
+            iconState != IconState.Disable && 
+            EventSystem.current.IsPointerOverGameObject() == false)
         {
             //禁用数字按钮
             ChangeSprite(IconState.Disable);

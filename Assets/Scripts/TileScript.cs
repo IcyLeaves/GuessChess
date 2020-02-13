@@ -3,6 +3,7 @@ using Photon.Realtime;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using Hashtable = ExitGames.Client.Photon.Hashtable;
 
 public class TileScript : MonoBehaviourPunCallbacks
@@ -30,14 +31,16 @@ public class TileScript : MonoBehaviourPunCallbacks
     {
         ChangeSprite(TileState.Hover);
         //左键按下
-        if (Input.GetMouseButton(0))
+        if (Input.GetMouseButton(0) && 
+            EventSystem.current.IsPointerOverGameObject() == false)
         {
             ChangeSprite(TileState.Press);
         }
         //1.左键松开
         //2.此按钮为可点击状态
         if (Input.GetMouseButtonUp(0) &&
-            tileState!=TileState.Disable)
+            tileState!=TileState.Disable &&
+            EventSystem.current.IsPointerOverGameObject() == false)
         {
             //禁用数字按钮
             ChangeSprite(TileState.Disable);

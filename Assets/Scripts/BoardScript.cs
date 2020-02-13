@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class BoardScript : MonoBehaviour
 {
@@ -31,7 +32,8 @@ public class BoardScript : MonoBehaviour
     }
     private void OnMouseOver()
     {
-        if (Input.GetMouseButtonUp(0))
+        if (Input.GetMouseButtonUp(0) &&
+            EventSystem.current.IsPointerOverGameObject() == false)
         {
             //调用[本地端.本地方]方法
             GameManager.Instance.players[GameManager.Instance.localIdx].ClickGrid(this);
