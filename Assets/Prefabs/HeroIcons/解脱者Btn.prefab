@@ -108,6 +108,7 @@ MonoBehaviour:
     type: 3}
   iconState: 0
   isPassive: 0
+  heroId: 2
 --- !u!58 &3047659952391994827
 CircleCollider2D:
   m_ObjectHideFlags: 0

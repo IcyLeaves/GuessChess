@@ -18,6 +18,8 @@ public class HeroIconScript : MonoBehaviour
     }
     public IconState iconState;
     public bool isPassive;
+    public int heroId;
+    private float hovertime=0;
 
 
     private void Start()
@@ -27,26 +29,34 @@ public class HeroIconScript : MonoBehaviour
     }
     private void OnMouseOver()
     {
-        ChangeSprite(IconState.Hover);
-        //左键按下
-        if (Input.GetMouseButton(0) && EventSystem.current.IsPointerOverGameObject() == false)
+        if(EventSystem.current.IsPointerOverGameObject() == false)
         {
-            ChangeSprite(IconState.Press);
-        }
-        //1.左键松开
-        //2.此按钮为可点击状态
-        //3.没点到UI
-        if (Input.GetMouseButtonUp(0) &&
-            iconState != IconState.Disable && 
-            EventSystem.current.IsPointerOverGameObject() == false)
-        {
-            //禁用数字按钮
-            ChangeSprite(IconState.Disable);
-            //Do something...
+            hovertime += Time.deltaTime * 1;
+            if(hovertime>=1.5)
+            {
+                CardHover.Instance.Activate(heroId);
+            }
+            ChangeSprite(IconState.Hover);
+            //左键按下
+            if (Input.GetMouseButton(0))
+            {
+                ChangeSprite(IconState.Press);
+            }
+            //1.左键松开
+            //2.此按钮为可点击状态
+            if (Input.GetMouseButtonUp(0) &&
+                iconState != IconState.Disable)
+            {
+                //禁用数字按钮
+                ChangeSprite(IconState.Disable);
+                //Do something...
+            }
         }
     }
     private void OnMouseExit()
     {
+        hovertime = 0;
+        CardHover.Instance.Deactivate();
         ChangeSprite(IconState.Idle);
     }
 

@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 7994597241588598192}
   - component: {fileID: 7994597241588598195}
   m_Layer: 0
-  m_Name: "\u8D4F\u91D1\u730E\u4EBABtn"
+  m_Name: "\u5384\u8FD0\u5C0F\u59D0Btn"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -108,6 +108,7 @@ MonoBehaviour:
     type: 3}
   iconState: 0
   isPassive: 0
+  heroId: 1
 --- !u!58 &7994597241588598195
 CircleCollider2D:
   m_ObjectHideFlags: 0

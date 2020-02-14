@@ -13,7 +13,14 @@
 
 -  重构gamemanager players，只引用gameobject而不是各个组件
 
--  右键Btn可以查看大图
+
+
 -  设置SkillTrigger
 -  Hover图层最顶端
+-  选完英雄卡就摧毁物件释放资源
+-  dark panel 1):disable时要摧毁多余资源 2):适时disable
+
+-  增加了鼠标悬浮时的UI防穿透
+-  悬浮Btn 1.5s可以看大图
+-  压缩英雄卡图片（7.7MB->470KB)
 

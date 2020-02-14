@@ -43,7 +43,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0043c3458153f65428dc1bc599dce67a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  heroSprite: {fileID: 0}
+  heroCardSprite:
+  - {fileID: 21300000, guid: f9b41972df26da54abece75fff736ada, type: 3}
+  - {fileID: 21300000, guid: 21b75f3da555aaf47b2656290ea11e02, type: 3}
+  - {fileID: 21300000, guid: 9cbfa0b4646f6d9409b4e56fd3b9fa28, type: 3}
   heroIconPrefabs:
   - {fileID: 4390659271928236929, guid: f5bc8d6f1ec0bec4baf47cf1bf560529, type: 3}
   - {fileID: 3047659952391994823, guid: bf67bdae7d7a5e3449b263bd29eb62b1, type: 3}
@@ -52,3 +55,7 @@ MonoBehaviour:
   - {fileID: 5841115818274977659, guid: df90dfdb4e1a8cb40a1ae9ca5602e345, type: 3}
   - {fileID: 6283504622245642348, guid: 0ece04114428be742a4a2531b7f1ec8a, type: 3}
   - {fileID: 7041087433437114259, guid: c759e4c46a0879744a4516fb614c1da8, type: 3}
+  heroBigCardImage: {fileID: 3271367573522574114, guid: 834de44f4af52654291353a4b6508d3c,
+    type: 3}
+  darkPanel: {fileID: 4504173006119536655, guid: 367b4e6ba4d1d5649a48afaef49a351f,
+    type: 3}

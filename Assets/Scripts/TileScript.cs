@@ -29,27 +29,28 @@ public class TileScript : MonoBehaviourPunCallbacks
     }
     private void OnMouseOver()
     {
-        ChangeSprite(TileState.Hover);
-        //左键按下
-        if (Input.GetMouseButton(0) && 
-            EventSystem.current.IsPointerOverGameObject() == false)
+        if(EventSystem.current.IsPointerOverGameObject() == false)
         {
-            ChangeSprite(TileState.Press);
-        }
-        //1.左键松开
-        //2.此按钮为可点击状态
-        if (Input.GetMouseButtonUp(0) &&
-            tileState!=TileState.Disable &&
-            EventSystem.current.IsPointerOverGameObject() == false)
-        {
-            //禁用数字按钮
-            ChangeSprite(TileState.Disable);
-            foreach(var tile in GameManager.Instance.tiles)
+            ChangeSprite(TileState.Hover);
+            //左键按下
+            if (Input.GetMouseButton(0))
             {
-                tile.ChangeSprite(TileState.Disable);
+                ChangeSprite(TileState.Press);
             }
-            //调用[本地端.本地方]的重载ChooseNumber
-            GameManager.Instance.players[GameManager.Instance.localIdx].ChooseNum(value);
+            //1.左键松开
+            //2.此按钮为可点击状态
+            if (Input.GetMouseButtonUp(0) &&
+                tileState != TileState.Disable)
+            {
+                //禁用数字按钮
+                ChangeSprite(TileState.Disable);
+                foreach (var tile in GameManager.Instance.tiles)
+                {
+                    tile.ChangeSprite(TileState.Disable);
+                }
+                //调用[本地端.本地方]的重载ChooseNumber
+                GameManager.Instance.players[GameManager.Instance.localIdx].ChooseNum(value);
+            }
         }
     }
     private void OnMouseExit()
