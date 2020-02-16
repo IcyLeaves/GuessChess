@@ -16,32 +16,7 @@ public class HeroManager : MonoBehaviour
     {
         Instance = this;
     }
-    public void SkillTrigger(string hero)
-    {
-        switch(hero)
-        {
-            case "EYXJ":
-                EYXJ();
-                break;
-        }
-    }
 
-    #region 0-光辉女郎
-    private int GHNL_N = 5;
-    public int[] GHNL_RandomNums(int nowNum, int goalNum)
-    {
-        int[] res = new int[GHNL_N];
-        //比如nowNum为17，
-        int minNum = Math.Max(0, nowNum - GHNL_N + 1);//minNum=13  (13,14,15,16,17)
-        int maxNum = Math.Min(goalNum, nowNum + GHNL_N - 1);//maxNum=20  (16,17,18,19,20)
-        int firstNum = Random.Range(minNum, maxNum - GHNL_N + 2);//firstNum in {13,14,15,16}
-        for (int i = 0; i < res.Length; i++)
-        {
-            res[i] = firstNum + i;
-        }
-        return res;
-    }
-    #endregion
 
     #region 1-解脱者
     private int JTZ_predict;

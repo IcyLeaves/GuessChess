@@ -809,6 +809,7 @@ GameObject:
   m_Component:
   - component: {fileID: 827595831}
   - component: {fileID: 827595830}
+  - component: {fileID: 827595832}
   m_Layer: 0
   m_Name: CardHover
   m_TagString: Untagged
@@ -842,6 +843,56 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 14
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!212 &827595832
+SpriteRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 827595829}
+  m_Enabled: 0
+  m_CastShadows: 0
+  m_ReceiveShadows: 0
+  m_DynamicOccludee: 1
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 0
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 1907305829
+  m_SortingLayer: 1
+  m_SortingOrder: 0
+  m_Sprite: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_FlipX: 0
+  m_FlipY: 0
+  m_DrawMode: 0
+  m_Size: {x: 14.17, y: 18.9}
+  m_AdaptiveModeThreshold: 0.5
+  m_SpriteTileMode: 0
+  m_WasSpriteAssigned: 0
+  m_MaskInteraction: 0
+  m_SpriteSortPoint: 0
 --- !u!1 &953207991
 GameObject:
   m_ObjectHideFlags: 0
@@ -1885,6 +1936,12 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 1994537279}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1994537281 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4504173006119536655, guid: 367b4e6ba4d1d5649a48afaef49a351f,
+    type: 3}
+  m_PrefabInstance: {fileID: 1994537279}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &2005479495
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1947,6 +2004,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2263863205675887652, guid: ececf2ec90f25a54b90c860f695be4b4,
+        type: 3}
+      propertyPath: darkPanel
+      value: 
+      objectReference: {fileID: 1994537281}
     - target: {fileID: 8408846774441447486, guid: ececf2ec90f25a54b90c860f695be4b4,
         type: 3}
       propertyPath: m_Name

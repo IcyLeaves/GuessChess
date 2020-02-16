@@ -7,6 +7,7 @@ public class DarkPanelScript : MonoBehaviour
 {
     public Image image;
     public bool isHide;
+    public GameObject tempPanel;
 
     public Sprite hideSprite;
     public Sprite appearSprite;
@@ -21,19 +22,20 @@ public class DarkPanelScript : MonoBehaviour
         {
             isHide = !isHide;//改变状态
             image.color = new Color(0, 0, 0, 0);//透明度为0
-            image.raycastTarget = false;//可以穿透
             btnImage.sprite = hideSprite;//改为“隐藏”图标
+            tempPanel.SetActive(false);
         }
         else
         {
             isHide = !isHide;//改变状态
             image.color = new Color(0, 0, 0, 100f/225f);//透明度为100
-            image.raycastTarget = true;//不可以穿透
             btnImage.sprite = appearSprite;//改为“显示”图标
+            tempPanel.SetActive(true);
         }
     }
     public void OnCloseBtnClick()
     {
+        Destroy(tempPanel);
         gameObject.SetActive(false);
     }
 

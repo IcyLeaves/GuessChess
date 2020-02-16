@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using Photon.Pun;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -19,13 +20,16 @@ public class HeroIconScript : MonoBehaviour
     public IconState iconState;
     public bool isPassive;
     public int heroId;
+    public int playerNumber;
     private float hovertime=0;
+    public int heroAbility = 0;
 
 
     private void Start()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
         iconState = IconState.Disable;//初始不可按
+        if (isPassive) iconState = IconState.Passive;
     }
     private void OnMouseOver()
     {
@@ -47,9 +51,9 @@ public class HeroIconScript : MonoBehaviour
             if (Input.GetMouseButtonUp(0) &&
                 iconState != IconState.Disable)
             {
-                //禁用数字按钮
+                //禁用按钮
                 ChangeSprite(IconState.Disable);
-                //Do something...
+                gameObject.GetComponent<Hero>().SendStartMessage();
             }
         }
     }

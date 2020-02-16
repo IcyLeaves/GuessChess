@@ -14,6 +14,11 @@ public class GameManager : MonoBehaviourPunCallbacks
     public static GameManager Instance;
     public int localIdx;//己方玩家idx
     public int otherIdx;//敌方玩家idx
+    public enum SkillState
+    {
+        TrunStart,
+    };
+    public SkillState skillState;
 
     public int selectNum;//加数
     public int nowSum;//累计值
@@ -33,8 +38,8 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     public int currentPlayerIdx;
     public Dictionary<string, object> tmpData;//若属性改变快于代码执行，则将数据缓存至此
-    #region Lobby
 
+    #region Lobby
     public override void OnLeftRoom()
     {
         base.OnLeftRoom();
@@ -94,8 +99,8 @@ public class GameManager : MonoBehaviourPunCallbacks
         int roundWinnerIdx = -1;//回合获胜者idx
         while (true)
         {
-            round++; turnText.text = "第 "+round+" 回合   第 1 轮";//回合数+1
-            currentPlayerIdx = -1;//还未决定先手玩家
+            round++;//回合数+1
+            RoundStart(round);//【回合开始】
             DecideFirst();//决定先手玩家
             yield return new WaitUntil(() => currentPlayerIdx >= 0);//等待先手玩家被分配
             //<轮次>开始
@@ -105,13 +110,14 @@ public class GameManager : MonoBehaviourPunCallbacks
             nowSum = 0;//清空累计值
             while (true)
             {
-                turn++; turnText.text = "第 " + round + " 回合   第 " +turn+ " 轮";//轮数+1
-                selectNum = -1;//玩家还未选择加数
+                turn++;
+                TurnStart(round, turn);//【轮次开始】
                 ChooseNumbers();//玩家选择加数
                 yield return new WaitUntil(() => selectNum >= 0);//等待玩家选择数字
                 AddToNowSum();//累计值更新
                 if (IsTurnContinue())//若轮次还将继续
                 {
+                    TurnOver();//【轮次结束】
                     NextTurn();//一轮结束，移交轮次控制权
                 }
                 else//若轮次停止循环
@@ -148,6 +154,7 @@ public class GameManager : MonoBehaviourPunCallbacks
         RestartGame();//重新开始游戏
         yield break;
     }
+
 
 
     public override void OnRoomPropertiesUpdate(Hashtable propertiesThatChanged)
@@ -269,11 +276,11 @@ public class GameManager : MonoBehaviourPunCallbacks
     #region SyncHeroCardSelected
     private bool SyncHeroCardSelected()
     {
-        if (players[localIdx].myHeroId>=0)
+        if (players[localIdx].myHeroId >= 0)
         {
             logText.text = "等待" + players[otherIdx].myNickName + "选择英雄";
         }
-        return players[0].myHeroId>=0 && players[1].myHeroId>=0;
+        return players[0].myHeroId >= 0 && players[1].myHeroId >= 0;
     }
     public void OnHeroCardClick(int val)
     {
@@ -289,11 +296,14 @@ public class GameManager : MonoBehaviourPunCallbacks
         boardManager.playerOneCornerPoint.gameObject.SetActive(true);
         boardManager.playerTwoCornerPoint.gameObject.SetActive(true);
         //显示头像
-        for(int i=0;i<heroIcons.Count;i++)
+        for (int i = 0; i < heroIcons.Count; i++)
         {
-            var g = Instantiate(HeroManager.Instance.heroIconPrefabs[players[i].myHeroId]);
+            var g = HeroManager.Instance.heroIconPrefabs[players[i].myHeroId];
+            g.GetComponent<HeroIconScript>().playerNumber = players[i].myActorNumber;
+            g = Instantiate(g);
             g.transform.SetParent(heroIcons[i].transform);
             g.transform.localPosition = Vector3.zero;
+            
         }
     }
     #endregion
@@ -318,6 +328,16 @@ public class GameManager : MonoBehaviourPunCallbacks
     }
     #endregion
 
+    #region RoundStart
+    private void RoundStart(int round)
+    {
+        turnText.text = "第 " + round + " 回合   第 1 轮";
+        currentPlayerIdx = -1;//还未决定先手玩家
+        //【每回合开始】技能恢复
+        heroIcons[localIdx].GetComponentInChildren<Hero>().OnRoundStart();
+    }
+    #endregion
+
     #region DecideFirst
     private void DecideFirst()
     {
@@ -339,9 +359,29 @@ public class GameManager : MonoBehaviourPunCallbacks
     }
     #endregion
 
+    #region TurnStart
+    private void TurnStart(int round, int turn)
+    {
+        turnText.text = "第 " + round + " 回合   第 " + turn + " 轮";//轮数+1
+        selectNum = -1;//玩家还未选择加数
+        if (currentPlayerIdx == localIdx)
+            MyTurnStart();
+    }
+    private void MyTurnStart()
+    {
+        //【我的每轮开始】技能触发
+        bool canUse = heroIcons[localIdx].GetComponentInChildren<Hero>().OnMyTurnStart();
+        if (canUse)
+            heroIcons[localIdx].GetComponentInChildren<HeroIconScript>().ChangeSprite(HeroIconScript.IconState.Enable);
+        else
+            heroIcons[localIdx].GetComponentInChildren<HeroIconScript>().ChangeSprite(HeroIconScript.IconState.Disable);
+    }
+    #endregion
+
     #region ChooseNumbers
     private void ChooseNumbers()
     {
+
         //无论是[本地端]还是[远程端]都会调用
         players[currentPlayerIdx].ChooseNum();
         //[currentPlayerIdx]为<轮次>控制方
@@ -385,12 +425,32 @@ public class GameManager : MonoBehaviourPunCallbacks
     }
     #endregion
 
+
+    #region TurnOver
+    private void TurnOver()
+    {
+        if (currentPlayerIdx == localIdx)
+            MyTurnOver();
+    }
+    private void MyTurnOver()
+    {
+        //【我的每轮结束】技能触发
+        bool canUse = heroIcons[localIdx].GetComponentInChildren<Hero>().OnMyTurnOver();
+        if (canUse)
+            heroIcons[localIdx].GetComponentInChildren<HeroIconScript>().ChangeSprite(HeroIconScript.IconState.Enable);
+        else
+            heroIcons[localIdx].GetComponentInChildren<HeroIconScript>().ChangeSprite(HeroIconScript.IconState.Disable);
+    }
+
+    #endregion
+
     #region NextTurn
     private void NextTurn()
     {
         currentPlayerIdx = 1 - currentPlayerIdx;
     }
     #endregion
+
 
     #region SetTurnWinner
     private int SetTurnWinner()
@@ -420,7 +480,7 @@ public class GameManager : MonoBehaviourPunCallbacks
         else//如果是[本地端.对方]
         {
             logText.text = "当前累计值：" + nowSum + "/" + goalNum + "\n" +
-                "等待" + players[otherIdx].myNickName + "攻击，还剩"+restAmmos+"发";
+                "等待" + players[otherIdx].myNickName + "攻击，还剩" + restAmmos + "发";
         }
         //如果有缓存数据
         if ((Vector2)tmpData["attackPos"] != new Vector2(-1, -1))
@@ -482,7 +542,6 @@ public class GameManager : MonoBehaviourPunCallbacks
             return 1;
         return -1;
     }
-
     #endregion
 
     #region InitGameOver
