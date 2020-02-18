@@ -108,7 +108,9 @@ MonoBehaviour:
     type: 3}
   iconState: 0
   isPassive: 0
-  heroId: 1
+  heroId: 2
+  playerNumber: 0
+  heroAbility: 0
 --- !u!58 &7994597241588598195
 CircleCollider2D:
   m_ObjectHideFlags: 0

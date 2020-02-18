@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 3047659952391994822}
   - component: {fileID: 3047659952391994824}
   - component: {fileID: 3047659952391994827}
+  - component: {fileID: 5241265418325973238}
   m_Layer: 0
   m_Name: "\u89E3\u8131\u8005Btn"
   m_TagString: Untagged
@@ -108,7 +109,9 @@ MonoBehaviour:
     type: 3}
   iconState: 0
   isPassive: 0
-  heroId: 2
+  heroId: 1
+  playerNumber: 1
+  heroAbility: 0
 --- !u!58 &3047659952391994827
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -125,3 +128,23 @@ CircleCollider2D:
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
   m_Radius: 1.0009766
+--- !u!114 &5241265418325973238
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3047659952391994823}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d7c5637c4c5c95b4c86c8a64c2725415, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isPassive: 0
+  playerNum: -1
+  canUse: 0
+  predictNum: -1
+  actualNum: -1
+  isPredict: 0
+  JTZ_Panel: {fileID: 5366878499241173457, guid: aa2c0defd68935d43917da600cbdc87b,
+    type: 3}

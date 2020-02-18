@@ -114,6 +114,7 @@ public class GameManager : MonoBehaviourPunCallbacks
                 TurnStart(round, turn);//【轮次开始】
                 ChooseNumbers();//玩家选择加数
                 yield return new WaitUntil(() => selectNum >= 0);//等待玩家选择数字
+                NumSelected();//【玩家选择数字后】
                 AddToNowSum();//累计值更新
                 if (IsTurnContinue())//若轮次还将继续
                 {
@@ -124,6 +125,7 @@ public class GameManager : MonoBehaviourPunCallbacks
                 {
                     turnWinnerIdx = SetTurnWinner();//决出轮次赢家
                     ammos = SetAmmos();//计算弹药
+                    TurnOver();//【轮次结束】
                     break;//结束<轮次>循环
                 }
             }
@@ -154,7 +156,6 @@ public class GameManager : MonoBehaviourPunCallbacks
         RestartGame();//重新开始游戏
         yield break;
     }
-
 
 
     public override void OnRoomPropertiesUpdate(Hashtable propertiesThatChanged)
@@ -406,6 +407,19 @@ public class GameManager : MonoBehaviourPunCallbacks
             //随后清空以备下一次接收
             tmpData["selectNum"] = -1;
         }
+    }
+    #endregion
+
+    #region NumSelected
+    private void NumSelected()
+    {
+        if (currentPlayerIdx != localIdx)
+            EnemyNumSelected();
+    }
+    private void EnemyNumSelected()
+    {
+        //【敌方选择数字后】技能触发
+        heroIcons[localIdx].GetComponentInChildren<Hero>().OnEnemyNumberSelected(selectNum);
     }
     #endregion
 

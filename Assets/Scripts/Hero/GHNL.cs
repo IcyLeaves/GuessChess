@@ -8,6 +8,11 @@ using Random = UnityEngine.Random;
 
 public class GHNL : Hero
 {
+    //OnMyTurnStart:在自己轮次开始时呈现是否可用
+    //OnMyTurnOver:在自己轮次结束时显示不可用
+    //OnRoundStart:在回合开始时恢复可用
+    //OnAbilityOver:技能结束后，设置不可用并呈现
+
     private int N = 5;
     public bool canUse = false;
     public GameObject GHNL_Panel;
@@ -27,6 +32,7 @@ public class GHNL : Hero
     }
     private IEnumerator Fade(float seconds)
     {
+        //seconds秒后才发送关闭Panel消息
         yield return new WaitForSeconds(seconds);
         SendOverMessage();
     }
@@ -49,7 +55,7 @@ public class GHNL : Hero
         return false;
     }
 
-    public override void Ability(bool isLocal)
+    public override void Ability(bool isLocal,int abilityState=0)
     {
         if(isLocal)
         {
@@ -63,7 +69,7 @@ public class GHNL : Hero
         }
         else
         {
-            //技能内容，目前是生成预测文本
+            //敌方无法看见数字但能看见技能效果
             GHNL_Panel.GetComponentInChildren<Text>().text = 
                 "累计值在这五个数之中：\n"+
                 "? ? ? ? ?";
