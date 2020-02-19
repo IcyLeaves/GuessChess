@@ -24,6 +24,8 @@ public class GameManager : MonoBehaviourPunCallbacks
     public int nowSum;//累计值
     public int goalNum;//阈值
     public Vector2 attackPos;//攻击位置
+    public int ammos;
+    public bool isResetAmmo;//是否重载弹药
 
     public List<PlayerManager> players;
     public BoardManager boardManager;
@@ -106,7 +108,7 @@ public class GameManager : MonoBehaviourPunCallbacks
             //<轮次>开始
             int turn = 0;//清空轮数
             int turnWinnerIdx = -1;//轮次获胜者idx
-            int ammos = -1;//弹药数
+            ammos = -1;//弹药数
             nowSum = 0;//清空累计值
             while (true)
             {
@@ -124,21 +126,37 @@ public class GameManager : MonoBehaviourPunCallbacks
                 else//若轮次停止循环
                 {
                     turnWinnerIdx = SetTurnWinner();//决出轮次赢家
-                    ammos = SetAmmos();//计算弹药
                     TurnOver();//【轮次结束】
                     break;//结束<轮次>循环
                 }
             }
             //<攻击>开始
+            ammos = SetAmmos();//计算弹药
+            isResetAmmo = false;//目前弹药还没有重载
+            AttackStart(turnWinnerIdx,ammos);//【攻击开始】
             int restAmmos = ammos;//剩余弹药设置为弹药数
             while (true)
             {
+                if (restAmmos <= 0)//如果子弹用完
+                {
+                    AttackOver();//则停止循环，攻击结束
+                    break;
+                }
                 attackPos = new Vector2(-1, -1);//玩家还未攻击
                 WinnerAttackOnce(turnWinnerIdx, restAmmos, ammos);//赢家进行一次攻击
-                yield return new WaitUntil(() => attackPos != new Vector2(-1, -1));//等待赢家选择攻击坐标
+                yield return new WaitUntil(() => (
+                attackPos != new Vector2(-1, -1)) || isResetAmmo
+                );//等待赢家选择攻击坐标 或 弹药已重载
+                if(isResetAmmo)//如果重载了弹药
+                {
+                    isResetAmmo = false;
+                    restAmmos = ammos;//更新剩余弹药
+                    continue;//用新的弹药值重新攻击
+                }
                 AttackBoard(turnWinnerIdx);//发起攻击
                 restAmmos--;//剩余弹药-1
-                if (restAmmos <= 0 || IsGameOver())//如果游戏结束或子弹用完
+                OnceAttackOver(turnWinnerIdx);//【一次攻击完成】
+                if (IsGameOver())//如果游戏结束
                 {
                     AttackOver();//则停止循环，攻击结束
                     break;
@@ -156,7 +174,6 @@ public class GameManager : MonoBehaviourPunCallbacks
         RestartGame();//重新开始游戏
         yield break;
     }
-
 
     public override void OnRoomPropertiesUpdate(Hashtable propertiesThatChanged)
     {
@@ -480,6 +497,23 @@ public class GameManager : MonoBehaviourPunCallbacks
     }
     #endregion
 
+    #region AttackStart
+    private void AttackStart(int winnerIdx,int ammos)
+    {
+        if (winnerIdx == localIdx)
+            MyAttackStart();
+    }
+    private void MyAttackStart()
+    {
+        //【我的攻击开始】技能触发
+        bool canUse = heroIcons[localIdx].GetComponentInChildren<Hero>().OnMyAttackStart();
+        if (canUse)
+            heroIcons[localIdx].GetComponentInChildren<HeroIconScript>().ChangeSprite(HeroIconScript.IconState.Enable);
+        else
+            heroIcons[localIdx].GetComponentInChildren<HeroIconScript>().ChangeSprite(HeroIconScript.IconState.Disable);
+    }
+    #endregion
+
     #region WinnerAttackOnce
     private void WinnerAttackOnce(int winnerIdx, int restAmmos, int ammos)
     {
@@ -530,6 +564,23 @@ public class GameManager : MonoBehaviourPunCallbacks
     }
     #endregion
 
+    #region OnceAttackOver
+    private void OnceAttackOver(int winnerIdx)
+    {
+        if (winnerIdx == localIdx)
+            MyOnceAttackOver();
+    }
+    private void MyOnceAttackOver()
+    {
+        //【我的一次攻击结束】技能触发
+        bool canUse = heroIcons[localIdx].GetComponentInChildren<Hero>().OnMyOnceAttackOver();
+        if (canUse)
+            heroIcons[localIdx].GetComponentInChildren<HeroIconScript>().ChangeSprite(HeroIconScript.IconState.Enable);
+        else
+            heroIcons[localIdx].GetComponentInChildren<HeroIconScript>().ChangeSprite(HeroIconScript.IconState.Disable);
+    }
+    #endregion
+
     #region IsGameOver
     private bool IsGameOver()
     {
@@ -543,6 +594,7 @@ public class GameManager : MonoBehaviourPunCallbacks
         //取消鼠标悬浮图标
         Hover.Instance.Deactivate();
         //清除本地的攻击坐标缓存，以防影响下次攻击
+        attackPos = new Vector2(-1, -1);
         tmpData["attackPos"] = new Vector2(-1, -1);
     }
     #endregion

@@ -55,6 +55,15 @@ public abstract class Hero:MonoBehaviourPunCallbacks
     {
         return false;
     }
+    public virtual bool OnMyAttackStart()
+    {
+        return false;
+    }
+    public virtual bool OnMyOnceAttackOver()
+    {
+        return false;
+    }
+
     public virtual bool OnAbilityOver()
     {
         darkPanel.OnCloseBtnClick();
