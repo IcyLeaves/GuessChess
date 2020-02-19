@@ -1,0 +1,56 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &8408846774441447486
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 793273971938239446}
+  - component: {fileID: 2263863205675887652}
+  m_Layer: 0
+  m_Name: HeroManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &793273971938239446
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8408846774441447486}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2263863205675887652
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8408846774441447486}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0043c3458153f65428dc1bc599dce67a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  heroIconPrefabs:
+  - {fileID: 4390659271928236929, guid: f5bc8d6f1ec0bec4baf47cf1bf560529, type: 3}
+  - {fileID: 3047659952391994823, guid: bf67bdae7d7a5e3449b263bd29eb62b1, type: 3}
+  - {fileID: 7994597241588598207, guid: 3978e527b76c1884183b97c9fa79c56d, type: 3}
+  heroCardPrefabs:
+  - {fileID: 5841115818274977659, guid: df90dfdb4e1a8cb40a1ae9ca5602e345, type: 3}
+  - {fileID: 6283504622245642348, guid: 0ece04114428be742a4a2531b7f1ec8a, type: 3}
+  - {fileID: 7041087433437114259, guid: c759e4c46a0879744a4516fb614c1da8, type: 3}
+  heroes: []
+  darkPanel: {fileID: 4504173006119536655, guid: 367b4e6ba4d1d5649a48afaef49a351f,
+    type: 3}

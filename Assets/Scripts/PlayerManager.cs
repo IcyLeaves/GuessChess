@@ -15,15 +15,17 @@ public class PlayerManager : MonoBehaviourPunCallbacks
     public Sprite[] specialSprites;
     public Vector2 myStarPos;
     public int myHp;
+    public int myHeroId;
     public enum PlayerState
     {
-        Idle, Ready, PlaceStar, PlaceComplete, ChooseNumbers, Attack, OthersTurn,
+        Idle, Ready,PlaceStar, PlaceComplete, ChooseNumbers, Attack, OthersTurn,
     }
     public PlayerState myState;
 
     public virtual void InitInfo()
     {
         myHp = 0;
+        myHeroId = -1;
         myActorNumber = PhotonNetwork.PlayerList[myIdx].ActorNumber;
         myNickName = PhotonNetwork.CurrentRoom.Players[myActorNumber].NickName;
         switch(myNickName)
@@ -36,6 +38,12 @@ public class PlayerManager : MonoBehaviourPunCallbacks
                 break;
         }
         
+    }
+
+    public virtual void SelectHero(int id)
+    {
+        //选完英雄要在远程和本地同步
+        CustomProperties.SetPlayerProp("heroId", id, myActorNumber);
     }
 
     public virtual void PlaceStar()
@@ -117,6 +125,16 @@ public class PlayerManager : MonoBehaviourPunCallbacks
                 //[玩家星星位置]
                 myStarPos = pos;
                 myHp++;
+            }
+        }
+        if (changedProps.TryGetValue("heroId", out tempObj))
+        {
+            int heroId = (int)tempObj;
+            //1.若该脚本为对应Player
+            if (myActorNumber == targetPlayer.ActorNumber)
+            {
+                //[玩家所选英雄]
+                myHeroId = heroId;
             }
         }
         if (changedProps.TryGetValue("state", out tempObj))

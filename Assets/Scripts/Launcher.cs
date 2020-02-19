@@ -11,6 +11,7 @@ public class Launcher : MonoBehaviourPunCallbacks
     public byte MaxPlayersPerRoom = 2;
     public GameObject controlPanel;
     public GameObject progressLabel;
+    public GameObject cancelBtn;
 
     private bool isConnecting;
 
@@ -24,6 +25,15 @@ public class Launcher : MonoBehaviourPunCallbacks
     private void Start()
     {
         progressLabel.SetActive(false);
+        cancelBtn.SetActive(false);
+        controlPanel.SetActive(true);
+    }
+
+    public void DisConnect()
+    {
+        PhotonNetwork.Disconnect();
+        progressLabel.SetActive(false);
+        cancelBtn.SetActive(false);
         controlPanel.SetActive(true);
     }
 
@@ -43,6 +53,7 @@ public class Launcher : MonoBehaviourPunCallbacks
             PhotonNetwork.ConnectUsingSettings();
         }
         progressLabel.SetActive(true);
+        cancelBtn.SetActive(true);
         controlPanel.SetActive(false);
     }
     public override void OnConnectedToMaster()
@@ -64,6 +75,7 @@ public class Launcher : MonoBehaviourPunCallbacks
     {
         Debug.LogWarning("OnDisconnected() was called by PUN");
         progressLabel.SetActive(false);
+        cancelBtn.SetActive(false);
         controlPanel.SetActive(true);
     }
 
