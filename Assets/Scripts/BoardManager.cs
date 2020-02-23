@@ -71,8 +71,8 @@ public class BoardManager : MonoBehaviour
         for (int i = 0; i < selectedBoard.childCount; i++)
         {
             var child = selectedBoard.GetChild(i).gameObject.GetComponent<BoardScript>();
-            if (child.boardState == BoardScript.BoardState.Nothing ||
-                child.boardState == BoardScript.BoardState.Star)
+            if (child.boardState !=BoardScript.BoardState.Damaged &&
+                child.boardState !=BoardScript.BoardState.DamagedStar)
                 tmpBoard.Add(child);
         }
         return tmpBoard;

@@ -55,7 +55,7 @@ public class GHNL : Hero
         return false;
     }
 
-    public override void Ability(bool isLocal,int abilityState=0)
+    public override void Ability(bool isLocal)
     {
         if(isLocal)
         {

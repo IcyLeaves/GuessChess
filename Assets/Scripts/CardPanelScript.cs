@@ -7,7 +7,6 @@ using Random=UnityEngine.Random;
 public class CardPanelScript : MonoBehaviour
 {
     public int numOfCards = 3;
-
     private int[] heroIdxs;
 
     private void Start()

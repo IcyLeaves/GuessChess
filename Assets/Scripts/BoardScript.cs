@@ -19,7 +19,7 @@ public class BoardScript : MonoBehaviour
     private SpriteRenderer spriteRenderer;
     public enum BoardState
     {
-        Nothing,Star,Damaged,DamagedStar,
+        Nothing,Star,Damaged,DamagedStar,Trap
     }
     public BoardState boardState;
 
@@ -57,5 +57,11 @@ public class BoardScript : MonoBehaviour
             default:
                 break;
         }
+    }
+
+    public void ChangeSprite(BoardState state,Sprite sprite)
+    {
+        boardState = state;
+        spriteRenderer.sprite = sprite;
     }
 }

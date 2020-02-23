@@ -63,7 +63,7 @@ public class JTZ : Hero
     {
         actualNum = selectNum;
     }
-    public override void Ability(bool isLocal, int abilityState = 0)
+    public override void Ability(bool isLocal, int abilityState)
     {
         //在Dark Panel下生成临时obj
         darkPanel.tempPanel = Instantiate(JTZ_Panel);

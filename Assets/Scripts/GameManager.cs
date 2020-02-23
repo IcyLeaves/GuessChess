@@ -26,6 +26,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     public Vector2 attackPos;//攻击位置
     public int ammos;
     public bool isResetAmmo;//是否重载弹药
+    public List<Hero> heroScripts;
 
     public List<PlayerManager> players;
     public BoardManager boardManager;
@@ -37,6 +38,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     public Text turnText;
     public GameObject heroCardPanel;
     public List<GameObject> heroIcons;
+
 
     public int currentPlayerIdx;
     public Dictionary<string, object> tmpData;//若属性改变快于代码执行，则将数据缓存至此
@@ -96,6 +98,8 @@ public class GameManager : MonoBehaviourPunCallbacks
         ShowBoard();//显示棋盘
         PlaceStars();//玩家放置星星
         yield return new WaitUntil(SyncPlaceComplete);//等待双方放置星星完毕
+        PlaceTrap();//【放置额外陷阱】
+        yield return new WaitUntil(SyncTrapPlaced);//等待双方放置额外陷阱
         //<回合>开始
         int round = 0;//清空回合数
         int roundWinnerIdx = -1;//回合获胜者idx
@@ -131,9 +135,9 @@ public class GameManager : MonoBehaviourPunCallbacks
                 }
             }
             //<攻击>开始
-            ammos = SetAmmos();//计算弹药
+            ammos = SetAmmos(turnWinnerIdx);//计算弹药
             isResetAmmo = false;//目前弹药还没有重载
-            AttackStart(turnWinnerIdx,ammos);//【攻击开始】
+            AttackStart(turnWinnerIdx, ammos);//【攻击开始】
             int restAmmos = ammos;//剩余弹药设置为弹药数
             while (true)
             {
@@ -147,7 +151,7 @@ public class GameManager : MonoBehaviourPunCallbacks
                 yield return new WaitUntil(() => (
                 attackPos != new Vector2(-1, -1)) || isResetAmmo
                 );//等待赢家选择攻击坐标 或 弹药已重载
-                if(isResetAmmo)//如果重载了弹药
+                if (isResetAmmo)//如果重载了弹药
                 {
                     isResetAmmo = false;
                     restAmmos = ammos;//更新剩余弹药
@@ -174,6 +178,7 @@ public class GameManager : MonoBehaviourPunCallbacks
         RestartGame();//重新开始游戏
         yield break;
     }
+
 
     public override void OnRoomPropertiesUpdate(Hashtable propertiesThatChanged)
     {
@@ -310,6 +315,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     #region ShowBoard
     private void ShowBoard()
     {
+        heroScripts = new List<Hero>();
         //显示棋盘
         boardManager.playerOneCornerPoint.gameObject.SetActive(true);
         boardManager.playerTwoCornerPoint.gameObject.SetActive(true);
@@ -321,7 +327,8 @@ public class GameManager : MonoBehaviourPunCallbacks
             g = Instantiate(g);
             g.transform.SetParent(heroIcons[i].transform);
             g.transform.localPosition = Vector3.zero;
-            
+            //本地化一下脚本组件
+            heroScripts.Add(g.GetComponentInChildren<Hero>());
         }
     }
     #endregion
@@ -340,7 +347,29 @@ public class GameManager : MonoBehaviourPunCallbacks
     {
         if (players[localIdx].myState == PlayerManager.PlayerState.PlaceComplete)
         {
-            logText.text = "等待" + players[otherIdx].myNickName + "放置";
+            logText.text = "等待" + players[otherIdx].myNickName + "放置星星";
+        }
+        return SyncPlayerState(PlayerManager.PlayerState.PlaceComplete);
+    }
+    #endregion
+
+    #region PlaceTrap
+    private void PlaceTrap()
+    {
+        players[localIdx].myState = heroScripts[localIdx].OnStarPlaced(true) ?
+            PlayerManager.PlayerState.PlaceTrap : PlayerManager.PlayerState.PlaceComplete;
+        players[otherIdx].myState = heroScripts[otherIdx].OnStarPlaced(false) ?
+            PlayerManager.PlayerState.PlaceTrap : PlayerManager.PlayerState.PlaceComplete;
+    }
+    #endregion
+
+    #region SyncTrapPlaced
+    private bool SyncTrapPlaced()
+    {
+        if (players[localIdx].myState == PlayerManager.PlayerState.PlaceComplete)
+        {
+            logText.text = "等待" + players[otherIdx].myNickName + "放置"
+                + heroScripts[otherIdx].GetTrapName();
         }
         return SyncPlayerState(PlayerManager.PlayerState.PlaceComplete);
     }
@@ -352,7 +381,7 @@ public class GameManager : MonoBehaviourPunCallbacks
         turnText.text = "第 " + round + " 回合   第 1 轮";
         currentPlayerIdx = -1;//还未决定先手玩家
         //【每回合开始】技能恢复
-        heroIcons[localIdx].GetComponentInChildren<Hero>().OnRoundStart();
+        heroScripts[localIdx].OnRoundStart();
     }
     #endregion
 
@@ -388,7 +417,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     private void MyTurnStart()
     {
         //【我的每轮开始】技能触发
-        bool canUse = heroIcons[localIdx].GetComponentInChildren<Hero>().OnMyTurnStart();
+        bool canUse = heroScripts[localIdx].OnMyTurnStart();
         if (canUse)
             heroIcons[localIdx].GetComponentInChildren<HeroIconScript>().ChangeSprite(HeroIconScript.IconState.Enable);
         else
@@ -436,7 +465,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     private void EnemyNumSelected()
     {
         //【敌方选择数字后】技能触发
-        heroIcons[localIdx].GetComponentInChildren<Hero>().OnEnemyNumberSelected(selectNum);
+        heroScripts[localIdx].OnEnemyNumberSelected(selectNum);
     }
     #endregion
 
@@ -466,13 +495,12 @@ public class GameManager : MonoBehaviourPunCallbacks
     private void MyTurnOver()
     {
         //【我的每轮结束】技能触发
-        bool canUse = heroIcons[localIdx].GetComponentInChildren<Hero>().OnMyTurnOver();
+        bool canUse = heroScripts[localIdx].OnMyTurnOver();
         if (canUse)
             heroIcons[localIdx].GetComponentInChildren<HeroIconScript>().ChangeSprite(HeroIconScript.IconState.Enable);
         else
             heroIcons[localIdx].GetComponentInChildren<HeroIconScript>().ChangeSprite(HeroIconScript.IconState.Disable);
     }
-
     #endregion
 
     #region NextTurn
@@ -491,14 +519,14 @@ public class GameManager : MonoBehaviourPunCallbacks
     #endregion
 
     #region SetAmmos
-    private int SetAmmos()
+    private int SetAmmos(int winnerIdx)
     {
-        return 6 - (nowSum - goalNum);
+        return 6 - (nowSum - goalNum)+heroScripts[winnerIdx].GetExtraAmmos();
     }
     #endregion
 
     #region AttackStart
-    private void AttackStart(int winnerIdx,int ammos)
+    private void AttackStart(int winnerIdx, int ammos)
     {
         if (winnerIdx == localIdx)
             MyAttackStart();
@@ -506,7 +534,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     private void MyAttackStart()
     {
         //【我的攻击开始】技能触发
-        bool canUse = heroIcons[localIdx].GetComponentInChildren<Hero>().OnMyAttackStart();
+        bool canUse = heroScripts[localIdx].OnMyAttackStart();
         if (canUse)
             heroIcons[localIdx].GetComponentInChildren<HeroIconScript>().ChangeSprite(HeroIconScript.IconState.Enable);
         else
@@ -559,6 +587,12 @@ public class GameManager : MonoBehaviourPunCallbacks
             Hover.Instance.Deactivate();
             return;
         }
+        //如果攻击到了陷阱
+        if(heroScripts[ruinedIdx].IsInTrap(board.gridPos.pos))
+        {
+            heroScripts[ruinedIdx].Ability(board);
+            return;
+        }
         //回调，将被点击方块改成受损
         board.ChangeSprite(BoardScript.BoardState.Damaged);
     }
@@ -573,7 +607,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     private void MyOnceAttackOver()
     {
         //【我的一次攻击结束】技能触发
-        bool canUse = heroIcons[localIdx].GetComponentInChildren<Hero>().OnMyOnceAttackOver();
+        bool canUse = heroScripts[localIdx].OnMyOnceAttackOver();
         if (canUse)
             heroIcons[localIdx].GetComponentInChildren<HeroIconScript>().ChangeSprite(HeroIconScript.IconState.Enable);
         else

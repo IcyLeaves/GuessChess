@@ -63,7 +63,28 @@ public abstract class Hero:MonoBehaviourPunCallbacks
     {
         return false;
     }
-
+    public virtual int GetExtraAmmos()
+    {
+        return 0;
+    }
+    #region 【领地】
+    public virtual bool OnStarPlaced(bool isLocal)
+    {
+        return false;
+    }
+    public virtual bool PlaceTrap(BoardScript board)
+    {
+        return false;
+    }
+    public virtual string GetTrapName()
+    {
+        return "";
+    }
+    public virtual bool IsInTrap(Vector2 pos)
+    {
+        return false;
+    }
+    #endregion
     public virtual bool OnAbilityOver()
     {
         darkPanel.OnCloseBtnClick();
@@ -73,5 +94,16 @@ public abstract class Hero:MonoBehaviourPunCallbacks
     {
         return;
     }
-    public abstract void Ability(bool isLocal,int abilityState=0);
+    public virtual void Ability(bool isLocal)
+    {
+        return;
+    }
+    public virtual void Ability(bool isLocal,int abilityState)
+    {
+        return;
+    }
+    public virtual void Ability(BoardScript board)
+    {
+        return;
+    }
 }

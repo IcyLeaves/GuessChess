@@ -54,7 +54,7 @@ public class EYXJ : Hero
         return canUse;
     }
 
-    public override void Ability(bool isLocal, int abilityState = 0)
+    public override void Ability(bool isLocal)
     {
         //在Dark Panel下生成临时obj
         darkPanel.tempPanel = Instantiate(EYXJ_Panel);

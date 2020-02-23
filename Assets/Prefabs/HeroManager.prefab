@@ -47,10 +47,11 @@ MonoBehaviour:
   - {fileID: 4390659271928236929, guid: f5bc8d6f1ec0bec4baf47cf1bf560529, type: 3}
   - {fileID: 3047659952391994823, guid: bf67bdae7d7a5e3449b263bd29eb62b1, type: 3}
   - {fileID: 7994597241588598207, guid: 3978e527b76c1884183b97c9fa79c56d, type: 3}
+  - {fileID: 2459919403624306775, guid: ca8251eba942a4441b8553c3bda35d35, type: 3}
   heroCardPrefabs:
   - {fileID: 5841115818274977659, guid: df90dfdb4e1a8cb40a1ae9ca5602e345, type: 3}
   - {fileID: 6283504622245642348, guid: 0ece04114428be742a4a2531b7f1ec8a, type: 3}
   - {fileID: 7041087433437114259, guid: c759e4c46a0879744a4516fb614c1da8, type: 3}
-  heroes: []
+  - {fileID: 392624848715571195, guid: e8020087dc2df6348b3459e651d2bb9c, type: 3}
   darkPanel: {fileID: 4504173006119536655, guid: 367b4e6ba4d1d5649a48afaef49a351f,
     type: 3}
