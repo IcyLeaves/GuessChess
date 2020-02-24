@@ -16,11 +16,11 @@ public abstract class Hero:MonoBehaviourPunCallbacks
         darkPanel = HeroManager.Instance.darkPanel.GetComponent<DarkPanelScript>();
         playerNum = gameObject.GetComponent<HeroIconScript>().playerNumber;
     }
-    public virtual void SendStartMessage(int val=0)
+    public virtual void SendStartMessage(object val=null)
     {
         CustomProperties.SetPlayerProp("startAbility", val, playerNum);
     }
-    public virtual void SendOverMessage(int val = 0)
+    public virtual void SendOverMessage(object val = null)
     {
         CustomProperties.SetPlayerProp("overAbility", val, playerNum);
     }
@@ -31,18 +31,23 @@ public abstract class Hero:MonoBehaviourPunCallbacks
         //[开始]
         if (changedProps.TryGetValue("startAbility", out tempObj))
         {
-            int state = (int)tempObj;
             if (targetPlayer.IsLocal)
-                Ability(true, state);
+                Ability(true);
             else
-                Ability(false, state);
+                Ability(false);
         }
         //[结束]
         if (changedProps.TryGetValue("overAbility", out tempObj))
         {
             OnAbilityOver();
         }
+        OtherPlayerPropertiesUpdate(targetPlayer, changedProps);
     }
+    protected virtual void OtherPlayerPropertiesUpdate(Player targetPlayer, Hashtable changedProps)
+    {
+        return;
+    }
+
     public virtual bool OnMyTurnStart()
     {
         return false;

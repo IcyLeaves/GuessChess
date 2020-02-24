@@ -82,10 +82,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3f1cc66e803810a4299400e5854a9a1c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  heroCardsPrefabs:
-  - {fileID: 5841115818274977659, guid: df90dfdb4e1a8cb40a1ae9ca5602e345, type: 3}
-  - {fileID: 7041087433437114259, guid: c759e4c46a0879744a4516fb614c1da8, type: 3}
-  - {fileID: 6283504622245642348, guid: 0ece04114428be742a4a2531b7f1ec8a, type: 3}
+  numOfCards: 3
+  testCardIdx: -1
 --- !u!1 &7254347974650649359
 GameObject:
   m_ObjectHideFlags: 0

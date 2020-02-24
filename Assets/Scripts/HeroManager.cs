@@ -7,6 +7,12 @@ using Random = UnityEngine.Random;
 
 public class HeroManager : MonoBehaviour
 {
+    //0.光辉女郎
+    //1.解脱者
+    //2.厄运小姐
+    //3.皮城女警
+    //4.曙光女神
+
     public static HeroManager Instance;
     public GameObject[] heroIconPrefabs;
     public GameObject[] heroCardPrefabs;

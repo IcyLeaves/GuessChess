@@ -15,11 +15,24 @@ public class PCNJ : Hero
 
     public int extraAmmos = 0;
 
+    #region override
+    protected override void OtherPlayerPropertiesUpdate(Player targetPlayer, Hashtable changedProps)
+    {
+        object tempObj;
+        //[陷阱位置]
+        if (changedProps.TryGetValue("trapPos", out tempObj))
+        {
+            //只接受远程数据
+            if (!targetPlayer.IsLocal)
+                trapPositions.Add((Vector2)tempObj);
+        }
+    }
+
     public override bool OnStarPlaced(bool isLocal)
     {
         if (isLocal)
             Hover.Instance.Activate(trapSprite);
-        GameManager.Instance.logText.text = "请放置诱捕器，还剩5个";
+        GameManager.Instance.logText.text = "请放置" + GetTrapName() + "，还剩"+N+"个";
         return true;
     }
     public override string GetTrapName()
@@ -48,7 +61,6 @@ public class PCNJ : Hero
     }
     public override void Ability(BoardScript board)
     {
-        Vector2 pos = trapPositions[dmgIdx];
         board.ChangeSprite(BoardScript.BoardState.Damaged, dmgTrapSprite);
         trapPositions.RemoveAt(dmgIdx);//移除这个陷阱
         extraAmmos = N - trapPositions.Count;
@@ -59,17 +71,6 @@ public class PCNJ : Hero
         return extraAmmos;
     }
 
-    public override void OnPlayerPropertiesUpdate(Player targetPlayer, Hashtable changedProps)
-    {
-        if (targetPlayer.ActorNumber != playerNum) return;
-        object tempObj;
-        //[陷阱位置]
-        if (changedProps.TryGetValue("trapPos", out tempObj))
-        {
-            //只接受远程数据
-            if (!targetPlayer.IsLocal)
-                trapPositions.Add((Vector2)tempObj);
-        }
-    }
+    #endregion
 
 }

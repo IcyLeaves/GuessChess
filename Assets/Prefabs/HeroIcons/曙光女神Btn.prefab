@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 3228778038335724815}
   - component: {fileID: 3228778038335724801}
   - component: {fileID: 3228778038335724802}
+  - component: {fileID: 8276587359744791621}
   m_Layer: 0
   m_Name: "\u66D9\u5149\u5973\u795EBtn"
   m_TagString: Untagged
@@ -127,3 +128,26 @@ CircleCollider2D:
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
   m_Radius: 1.0009766
+--- !u!114 &8276587359744791621
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3228778038335724814}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2116de28affd54645a4548c40e165a17, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isPassive: 0
+  playerNum: -1
+  N: 10
+  barrierSprite: {fileID: -2544189302831049708, guid: 3e1061a0c94e50e43a9032c73b2d6dd7,
+    type: 3}
+  dmgBarrierSprite: {fileID: -6054222055336102194, guid: 3e1061a0c94e50e43a9032c73b2d6dd7,
+    type: 3}
+  barrierPositions: []
+  barriers: []
+  dmgIdx: 0
+  barrier: {fileID: 312330266889051173, guid: 0a8ada2e35c50764f995619faa386c62, type: 3}

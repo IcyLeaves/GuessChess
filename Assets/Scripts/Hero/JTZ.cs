@@ -1,8 +1,10 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Photon.Pun;
+using Hashtable = ExitGames.Client.Photon.Hashtable;
+using Photon.Realtime;
 using UnityEngine.UI;
-
 
 public class JTZ : Hero
 {
@@ -23,13 +25,27 @@ public class JTZ : Hero
     {
         Predict, Reveal
     }
-    private IEnumerator Fade(float seconds)
-    {
-        //seconds秒后才发送关闭Panel消息
-        yield return new WaitForSeconds(seconds);
-        SendOverMessage();
-    }
 
+    #region override
+    public override void OnPlayerPropertiesUpdate(Player targetPlayer, Hashtable changedProps)
+    {
+        if (targetPlayer.ActorNumber != playerNum) return;
+        object tempObj;
+        //[开始]
+        if (changedProps.TryGetValue("startAbility", out tempObj))
+        {
+            int state = tempObj == null ? (int)AbilityState.Predict : (int)AbilityState.Reveal;
+            if (targetPlayer.IsLocal)
+                Ability(true, state);
+            else
+                Ability(false, state);
+        }
+        //[结束]
+        if (changedProps.TryGetValue("overAbility", out tempObj))
+        {
+            OnAbilityOver();
+        }
+    }
 
     public override bool OnMyTurnStart()
     {
@@ -43,7 +59,6 @@ public class JTZ : Hero
         isPredict = false;
         return canUse;
     }
-
     public override bool OnRoundStart()
     {
         canUse = true;
@@ -52,7 +67,6 @@ public class JTZ : Hero
         isPredict = false;
         return false;
     }
-
     public override bool OnAbilityOver()
     {
         base.OnAbilityOver();
@@ -115,7 +129,14 @@ public class JTZ : Hero
         }
         darkPanel.gameObject.SetActive(true);
     }
+    #endregion
 
+    private IEnumerator Fade(float seconds)
+    {
+        //seconds秒后才发送关闭Panel消息
+        yield return new WaitForSeconds(seconds);
+        SendOverMessage();
+    }
     public void PredictNum(int val)
     {
         predictNum = val;

@@ -8,11 +8,16 @@ public class CardPanelScript : MonoBehaviour
 {
     public int numOfCards = 3;
     private int[] heroIdxs;
+    public int testCardIdx = -1;
 
     private void Start()
     {
         heroIdxs = new int[numOfCards];
         RandomHeroCards();
+        if(testCardIdx!=-1)
+        {
+            heroIdxs[0] = testCardIdx;
+        }
         for (int i= 0; i<numOfCards; i++)
         {
             var g = Instantiate(HeroManager.Instance.heroCardPrefabs[heroIdxs[i]]);

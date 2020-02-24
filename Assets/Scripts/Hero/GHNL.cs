@@ -17,6 +17,52 @@ public class GHNL : Hero
     public bool canUse = false;
     public GameObject GHNL_Panel;
 
+    #region override
+    public override bool OnMyTurnStart()
+    {
+        return canUse;
+    }
+    public override bool OnRoundStart()
+    {
+        canUse = true;
+        return false;
+    }
+    public override bool OnAbilityOver()
+    {
+        base.OnAbilityOver();
+        canUse = false;
+        return false;
+    }
+    public override void Ability(bool isLocal)
+    {
+        if (isLocal)
+        {
+            //技能内容，目前是生成预测文本
+            GHNL_Panel.GetComponentInChildren<Text>().text = "累计值在这五个数之中：\n";
+            var res = RandomNums(GameManager.Instance.nowSum, GameManager.Instance.goalNum);
+            for (int i = 0; i < N; i++)
+            {
+                GHNL_Panel.GetComponentInChildren<Text>().text += res[i] + " ";
+            }
+        }
+        else
+        {
+            //敌方无法看见数字但能看见技能效果
+            GHNL_Panel.GetComponentInChildren<Text>().text =
+                "累计值在这五个数之中：\n" +
+                "? ? ? ? ?";
+        }
+        //在Dark Panel下生成临时obj
+        darkPanel.tempPanel = Instantiate(GHNL_Panel);
+        darkPanel.tempPanel.transform.SetParent(darkPanel.transform);
+        darkPanel.tempPanel.transform.localPosition = Vector2.zero;
+        darkPanel.gameObject.SetActive(true);
+        //两秒后自动消失
+        StartCoroutine(Fade(2f));
+        return;
+    }
+    #endregion
+
     private int[] RandomNums(int nowSum, int goalNum)
     {
         int[] res = new int[N];
@@ -37,50 +83,4 @@ public class GHNL : Hero
         SendOverMessage();
     }
 
-    public override bool OnMyTurnStart()
-    {
-        return canUse;
-    }
-
-    public override bool OnRoundStart()
-    {
-        canUse = true;
-        return false;
-    }
-
-    public override bool OnAbilityOver()
-    {
-        base.OnAbilityOver();
-        canUse = false;
-        return false;
-    }
-
-    public override void Ability(bool isLocal)
-    {
-        if(isLocal)
-        {
-            //技能内容，目前是生成预测文本
-            GHNL_Panel.GetComponentInChildren<Text>().text = "累计值在这五个数之中：\n";
-            var res = RandomNums(GameManager.Instance.nowSum, GameManager.Instance.goalNum);
-            for (int i = 0; i < N; i++)
-            {
-                GHNL_Panel.GetComponentInChildren<Text>().text += res[i] + " ";
-            }
-        }
-        else
-        {
-            //敌方无法看见数字但能看见技能效果
-            GHNL_Panel.GetComponentInChildren<Text>().text = 
-                "累计值在这五个数之中：\n"+
-                "? ? ? ? ?";
-        }
-        //在Dark Panel下生成临时obj
-        darkPanel.tempPanel = Instantiate(GHNL_Panel);
-        darkPanel.tempPanel.transform.SetParent(darkPanel.transform);
-        darkPanel.tempPanel.transform.localPosition=Vector2.zero;
-        darkPanel.gameObject.SetActive(true);
-        //两秒后自动消失
-        StartCoroutine(Fade(2f));
-        return;
-    }
 }
