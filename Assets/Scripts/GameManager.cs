@@ -179,7 +179,6 @@ public class GameManager : MonoBehaviourPunCallbacks
         yield break;
     }
 
-
     public override void OnRoomPropertiesUpdate(Hashtable propertiesThatChanged)
     {
         object tempObj;
@@ -218,6 +217,10 @@ public class GameManager : MonoBehaviourPunCallbacks
     private bool SyncPlayerState(PlayerManager.PlayerState state)
     {
         return players[0].myState == state && players[1].myState == state;
+    }
+    public PlayerManager GetPlayerByActorNumber(int playerNum)
+    {
+        return players[PhotonNetwork.CurrentRoom.Players[playerNum].IsLocal ? localIdx : otherIdx];
     }
 
     #region InitScene
@@ -380,8 +383,11 @@ public class GameManager : MonoBehaviourPunCallbacks
     {
         turnText.text = "第 " + round + " 回合   第 1 轮";
         currentPlayerIdx = -1;//还未决定先手玩家
+        //清空历史记录
+        HistoryScript.Instance.EmptyHistory();
         //【每回合开始】技能恢复
         heroScripts[localIdx].OnRoundStart();
+        heroScripts[otherIdx].OnRoundStart();
     }
     #endregion
 
@@ -474,7 +480,19 @@ public class GameManager : MonoBehaviourPunCallbacks
     {
         Debug.Log("[累计值]" + nowSum + "+" + players[currentPlayerIdx].myNickName + "." + selectNum + "=" + (nowSum + selectNum));
         nowSum += selectNum;
-
+        LogInHistory(selectNum);
+    }
+    private void LogInHistory(int num)
+    {
+        //产生历史数块
+        if (currentPlayerIdx == localIdx)//是本地玩家吗
+        {
+            HistoryScript.Instance.CreateHistory(true, num);
+        }
+        else
+        {
+            HistoryScript.Instance.CreateHistory(false, 0);//创建一个问号
+        }
     }
     #endregion
 
@@ -521,7 +539,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     #region SetAmmos
     private int SetAmmos(int winnerIdx)
     {
-        return 6 - (nowSum - goalNum)+heroScripts[winnerIdx].GetExtraAmmos();
+        return 6 - (nowSum - goalNum) + heroScripts[winnerIdx].GetExtraAmmos();
     }
     #endregion
 
@@ -576,21 +594,29 @@ public class GameManager : MonoBehaviourPunCallbacks
         int ruinedIdx = 1 - attackerIdx;
         //获取[被攻击者]面板的攻击坐标的方块
         BoardScript board = boardManager.GetPosBoard(ruinedIdx, attackPos);
+        //【如果攻击到了陷阱】
+        if (heroScripts[ruinedIdx].IsInTrap(board.gridPos.pos))
+        {
+            heroScripts[ruinedIdx].Ability(board);
+            return;
+        }
         //如果攻击到了星星
         if (board.gridPos.pos == players[ruinedIdx].myStarPos)
         {
-            //回调，将被点击方块改成受损星星
-            board.ChangeSprite(BoardScript.BoardState.DamagedStar);
-            //[被攻击者].HP-1
-            players[ruinedIdx].myHp--;
-            //取消鼠标悬浮图标
-            Hover.Instance.Deactivate();
-            return;
-        }
-        //如果攻击到了陷阱
-        if(heroScripts[ruinedIdx].IsInTrap(board.gridPos.pos))
-        {
-            heroScripts[ruinedIdx].Ability(board);
+            //【我的星星消亡】
+            if (heroScripts[ruinedIdx].OnMyStarRuined())
+            {
+                heroScripts[ruinedIdx].Ability(board);
+            }
+            else
+            {
+                //回调，将被点击方块改成受损星星
+                board.ChangeSprite(BoardScript.BoardState.DamagedStar);
+                //[被攻击者].HP-1
+                players[ruinedIdx].myHp--;
+                //取消鼠标悬浮图标
+                Hover.Instance.Deactivate();
+            }
             return;
         }
         //回调，将被点击方块改成受损
@@ -625,6 +651,9 @@ public class GameManager : MonoBehaviourPunCallbacks
     #region AttackOver
     private void AttackOver()
     {
+        //【一回合攻击结束】技能触发
+        heroScripts[localIdx].OnAttackOver();
+        heroScripts[otherIdx].OnAttackOver();
         //取消鼠标悬浮图标
         Hover.Instance.Deactivate();
         //清除本地的攻击坐标缓存，以防影响下次攻击

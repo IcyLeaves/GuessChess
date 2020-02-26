@@ -72,6 +72,14 @@ public abstract class Hero:MonoBehaviourPunCallbacks
     {
         return 0;
     }
+    public virtual bool OnMyStarRuined()
+    {
+        return false;
+    }
+    public virtual bool OnAttackOver()
+    {
+        return false;
+    }
     #region 【领地】
     public virtual bool OnStarPlaced(bool isLocal)
     {

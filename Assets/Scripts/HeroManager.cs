@@ -12,6 +12,7 @@ public class HeroManager : MonoBehaviour
     //2.厄运小姐
     //3.皮城女警
     //4.曙光女神
+    //5.蛮族之王
 
     public static HeroManager Instance;
     public GameObject[] heroIconPrefabs;
