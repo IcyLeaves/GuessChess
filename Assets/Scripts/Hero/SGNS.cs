@@ -38,10 +38,20 @@ public class SGNS : Hero
     {
         if (isLocal)
             Hover.Instance.Activate(barrierSprite);
-        GameManager.Instance.logText.text = "请放置"+GetTrapName()+ "，还剩" + N + "个";
+        GameManager.Instance.logText.text = "请放置" + GetTrapName() + "，还剩" + N + "个";
         return true;
     }
-
+    public override bool OnGameOver()
+    {
+        //只有对方的英雄才需要触发
+        if (PhotonNetwork.LocalPlayer.ActorNumber == playerNum) return false;
+        int playerId = GameManager.Instance.GetPlayerByActorNumber(playerNum).myIdx;
+        foreach (var barrierPos in barrierPositions)
+        {
+            CreateBarrier(BoardManager.Instance.GetPosBoard(playerId,barrierPos).transform.position);//产生护盾
+        }
+        return true;
+    }
     public override bool PlaceTrap(BoardScript board)
     {
         Vector2 pos = board.gridPos.pos;
@@ -70,7 +80,7 @@ public class SGNS : Hero
     public override void Ability(BoardScript board)
     {
         barrierPositions.RemoveAt(dmgIdx);//移除这个陷阱
-        if(barriers.Count>0)//说明是本地的护盾被击碎
+        if (barriers.Count > 0)//说明是本地的护盾被击碎
         {
             barriers[dmgIdx].GetComponent<SpriteRenderer>().sprite = dmgBarrierSprite;//击碎护盾
             barriers.RemoveAt(dmgIdx);//移除对象

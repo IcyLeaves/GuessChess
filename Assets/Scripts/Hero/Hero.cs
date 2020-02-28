@@ -80,6 +80,10 @@ public abstract class Hero:MonoBehaviourPunCallbacks
     {
         return false;
     }
+    public virtual bool OnGameOver()
+    {
+        return false;
+    }
     #region 【领地】
     public virtual bool OnStarPlaced(bool isLocal)
     {

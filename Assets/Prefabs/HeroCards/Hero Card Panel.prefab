@@ -83,6 +83,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   numOfCards: 3
+  heroCardsList: 
   testCardIdx: -1
 --- !u!1 &7254347974650649359
 GameObject:

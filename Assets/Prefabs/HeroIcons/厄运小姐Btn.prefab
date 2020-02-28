@@ -148,8 +148,9 @@ MonoBehaviour:
   canUse: 0
   quests: 
   ammoSprites:
-  - {fileID: -6495946302145914804, guid: 72cbccbf36696d7479b2a260bb5ab382, type: 3}
+  - {fileID: 2527726820438669813, guid: 72cbccbf36696d7479b2a260bb5ab382, type: 3}
   - {fileID: -6302496453327948333, guid: 72cbccbf36696d7479b2a260bb5ab382, type: 3}
   - {fileID: 7054667866427167739, guid: 72cbccbf36696d7479b2a260bb5ab382, type: 3}
   - {fileID: 397674562959106520, guid: 72cbccbf36696d7479b2a260bb5ab382, type: 3}
   - {fileID: 1243828662169269508, guid: 72cbccbf36696d7479b2a260bb5ab382, type: 3}
+  - {fileID: -6495946302145914804, guid: 72cbccbf36696d7479b2a260bb5ab382, type: 3}

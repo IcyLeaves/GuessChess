@@ -35,6 +35,9 @@ TextureImporter:
   - first:
       213: -257615746037444421
     second: EYXJ QuestTiles_10
+  - first:
+      213: -9124945411012894885
+    second: EYXJ QuestTiles_11
   externalObjects: {}
   serializedVersion: 10
   mipmaps:
@@ -133,7 +136,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: bc6da6474b6aa3f48887995b902fe33a
+      spriteID: c88cb23722388bf4fac96166c1de2e7d
       internalID: 8031047298824509369
       vertices: []
       indices: 
@@ -154,7 +157,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: e9e02e1c0d577bd498d344d67d92fcd5
+      spriteID: b895174cc002c1c4589c661086f5d63b
       internalID: 637898382451914682
       vertices: []
       indices: 
@@ -175,7 +178,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 118256b48b806d846a0784f594a57c25
+      spriteID: 3f762b2842a0ef441a4d9602c109ee53
       internalID: 1812471461254128756
       vertices: []
       indices: 
@@ -196,7 +199,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 3d9b9913889e3ed4ead7937d91076b3b
+      spriteID: 6a37ad46b08fb4f4a86a655a1c0f7014
       internalID: -6302496453327948333
       vertices: []
       indices: 
@@ -217,7 +220,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 15d9348386fede448ab01539dcc7237e
+      spriteID: a5cece259755b6e4a9996dbf9ba002a0
       internalID: 7054667866427167739
       vertices: []
       indices: 
@@ -238,7 +241,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 602578b873465aa47beb5b9c62af81e5
+      spriteID: 85af1efe0e75c0d46a4d538a72c4c9f0
       internalID: 397674562959106520
       vertices: []
       indices: 
@@ -259,7 +262,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: d7decbaf4347aee49b6e05e714fef8bc
+      spriteID: ad2844bfbf8ecc44499ce443ce83a2aa
       internalID: 1243828662169269508
       vertices: []
       indices: 
@@ -280,7 +283,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 96b42ce071754c644a1ccc2a41bc2143
+      spriteID: 39062f89d0ec169439adb6158b0083a2
       internalID: -6495946302145914804
       vertices: []
       indices: 
@@ -301,7 +304,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: fd875b39139940e4187d8a635fa28733
+      spriteID: d4efabe2b5e2173498e57a5e6ac647a0
       internalID: 2527726820438669813
       vertices: []
       indices: 
@@ -322,7 +325,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 31a864f35b2fe9f41aa05ce556de5476
+      spriteID: 1dbc6e44a9d474249bbc8ef4ad97740c
       internalID: -3585354085045962023
       vertices: []
       indices: 
@@ -343,8 +346,29 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 7b8e1c8bc5856f045aa33c4fd6e3b3d6
+      spriteID: 04e101aedf919614796b9bee72a81f26
       internalID: -257615746037444421
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: EYXJ QuestTiles_11
+      rect:
+        serializedVersion: 2
+        x: 176
+        y: 0
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fd6c0dbc3fc345e45b3b4b6c6b192e74
+      internalID: -9124945411012894885
       vertices: []
       indices: 
       edges: []

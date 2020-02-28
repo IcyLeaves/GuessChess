@@ -35,6 +35,17 @@ public class PCNJ : Hero
         GameManager.Instance.logText.text = "请放置" + GetTrapName() + "，还剩"+N+"个";
         return true;
     }
+    public override bool OnGameOver()
+    {
+        //只有对方的英雄才需要触发
+        if (PhotonNetwork.LocalPlayer.ActorNumber == playerNum) return false;
+        int playerId = GameManager.Instance.GetPlayerByActorNumber(playerNum).myIdx;
+        foreach(var trapPos in trapPositions)
+        {
+            BoardManager.Instance.GetPosBoard(playerId, trapPos).ChangeSprite(BoardScript.BoardState.Trap,trapSprite);
+        }
+        return true;
+    }
     public override string GetTrapName()
     {
         return "诱捕器";

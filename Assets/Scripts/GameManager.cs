@@ -293,8 +293,7 @@ public class GameManager : MonoBehaviourPunCallbacks
         HeroCardPanelInit();//打开英雄面板
     }
     private void HeroCardPanelInit()
-    {
-        //生成英雄卡片
+    { 
         heroCardPanel.SetActive(true);//显示Panel
     }
     #endregion
@@ -678,6 +677,9 @@ public class GameManager : MonoBehaviourPunCallbacks
     {
         //公布赢家
         logText.text = "赢家是：" + players[winnerIdx].myNickName;
+        //【赢家公布后】
+        heroScripts[localIdx].OnGameOver();
+        heroScripts[otherIdx].OnGameOver();
         //公开星星位置
         for (int i = 0; i < 2; i++)
         {

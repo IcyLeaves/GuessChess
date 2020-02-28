@@ -59,3 +59,7 @@ MonoBehaviour:
   - {fileID: 4458733328393416737, guid: 99a69eb29c09b6f4a8e0f387a3ece187, type: 3}
   darkPanel: {fileID: 4504173006119536655, guid: 367b4e6ba4d1d5649a48afaef49a351f,
     type: 3}
+  numOfCards: 3
+  testCardIdx: -1
+  roomHeroCardIdxs: 
+  myHeroCardIdxs: 

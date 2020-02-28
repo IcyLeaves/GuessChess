@@ -44,3 +44,6 @@ TagManager:
   - name: Hover
     uniqueID: 1907305829
     locked: 0
+  - name: Card Hover
+    uniqueID: 1472188559
+    locked: 0
