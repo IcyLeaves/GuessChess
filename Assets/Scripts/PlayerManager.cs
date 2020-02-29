@@ -18,7 +18,7 @@ public class PlayerManager : MonoBehaviourPunCallbacks
     public int myHeroId;
     public enum PlayerState
     {
-        Idle, Ready,PlaceStar, PlaceComplete, ChooseNumbers, Attack, OthersTurn,
+        Idle, Ready,PlaceStar,PlaceTrap, PlaceComplete, ChooseNumbers, Attack, OthersTurn,
     }
     public PlayerState myState;
 
@@ -65,7 +65,7 @@ public class PlayerManager : MonoBehaviourPunCallbacks
         //2.方块上必须什么都没有
         if (board.gridPos.playerIdx == myIdx && board.boardState==BoardScript.BoardState.Nothing)
         {
-            //将[本地端.本地方]和[远程端.本地方]的星星位置
+            //[本地端.本地方]和[远程端.本地方]的星星位置
             CustomProperties.SetPlayerProp("starPos", board.gridPos.pos, myActorNumber);
             //回调，将被点击方块改成星星
             board.ChangeSprite(BoardScript.BoardState.Star);
@@ -159,6 +159,21 @@ public class PlayerManager : MonoBehaviourPunCallbacks
                 break;
             case PlayerState.Attack:
                 Attack(board);
+                break;
+            case PlayerState.PlaceTrap:
+                //1.必须是自己的面板
+                if (board.gridPos.playerIdx == myIdx)
+                {
+                    //如果放完
+                    if(GameManager.Instance.heroScripts[myIdx].PlaceTrap(board))
+                    {
+                        //取消鼠标悬浮图标
+                        Hover.Instance.Deactivate();
+                        //放置完成，则使[本地端.本地方]和[远程端.本地方]放置完成
+                        CustomProperties.SetPlayerProp("state", PlayerState.PlaceComplete, myActorNumber);
+                        myState = PlayerState.PlaceComplete;
+                    }
+                }
                 break;
             default:
                 break;

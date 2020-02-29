@@ -124,9 +124,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   spriteNothing: {fileID: 1807125615787039003, guid: 0b77b91cbadf09f438822ec43c96c0d6,
     type: 3}
-  spriteStar: {fileID: -6614373457484812694, guid: 0b77b91cbadf09f438822ec43c96c0d6,
+  spriteStar: {fileID: 1639214462598301798, guid: 0b77b91cbadf09f438822ec43c96c0d6,
     type: 3}
   spriteDmg: {fileID: 349823833441268365, guid: 0b77b91cbadf09f438822ec43c96c0d6,
     type: 3}
-  spriteDmgStar: {fileID: 1639214462598301798, guid: 0b77b91cbadf09f438822ec43c96c0d6,
+  spriteDmgStar: {fileID: 2157240733274199957, guid: 0b77b91cbadf09f438822ec43c96c0d6,
     type: 3}
+  boardState: 0

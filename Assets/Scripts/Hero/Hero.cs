@@ -16,11 +16,11 @@ public abstract class Hero:MonoBehaviourPunCallbacks
         darkPanel = HeroManager.Instance.darkPanel.GetComponent<DarkPanelScript>();
         playerNum = gameObject.GetComponent<HeroIconScript>().playerNumber;
     }
-    public virtual void SendStartMessage(int val=0)
+    public virtual void SendStartMessage(object val=null)
     {
         CustomProperties.SetPlayerProp("startAbility", val, playerNum);
     }
-    public virtual void SendOverMessage(int val = 0)
+    public virtual void SendOverMessage(object val = null)
     {
         CustomProperties.SetPlayerProp("overAbility", val, playerNum);
     }
@@ -31,18 +31,23 @@ public abstract class Hero:MonoBehaviourPunCallbacks
         //[开始]
         if (changedProps.TryGetValue("startAbility", out tempObj))
         {
-            int state = (int)tempObj;
             if (targetPlayer.IsLocal)
-                Ability(true, state);
+                Ability(true);
             else
-                Ability(false, state);
+                Ability(false);
         }
         //[结束]
         if (changedProps.TryGetValue("overAbility", out tempObj))
         {
             OnAbilityOver();
         }
+        OtherPlayerPropertiesUpdate(targetPlayer, changedProps);
     }
+    protected virtual void OtherPlayerPropertiesUpdate(Player targetPlayer, Hashtable changedProps)
+    {
+        return;
+    }
+
     public virtual bool OnMyTurnStart()
     {
         return false;
@@ -63,7 +68,40 @@ public abstract class Hero:MonoBehaviourPunCallbacks
     {
         return false;
     }
-
+    public virtual int GetExtraAmmos()
+    {
+        return 0;
+    }
+    public virtual bool OnMyStarRuined()
+    {
+        return false;
+    }
+    public virtual bool OnAttackOver()
+    {
+        return false;
+    }
+    public virtual bool OnGameOver()
+    {
+        return false;
+    }
+    #region 【领地】
+    public virtual bool OnStarPlaced(bool isLocal)
+    {
+        return false;
+    }
+    public virtual bool PlaceTrap(BoardScript board)
+    {
+        return false;
+    }
+    public virtual string GetTrapName()
+    {
+        return "";
+    }
+    public virtual bool IsInTrap(Vector2 pos)
+    {
+        return false;
+    }
+    #endregion
     public virtual bool OnAbilityOver()
     {
         darkPanel.OnCloseBtnClick();
@@ -73,5 +111,16 @@ public abstract class Hero:MonoBehaviourPunCallbacks
     {
         return;
     }
-    public abstract void Ability(bool isLocal,int abilityState=0);
+    public virtual void Ability(bool isLocal)
+    {
+        return;
+    }
+    public virtual void Ability(bool isLocal,int abilityState)
+    {
+        return;
+    }
+    public virtual void Ability(BoardScript board)
+    {
+        return;
+    }
 }

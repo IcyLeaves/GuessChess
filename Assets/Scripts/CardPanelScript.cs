@@ -4,17 +4,20 @@ using UnityEngine;
 using UnityEngine.UI;
 using Random=UnityEngine.Random;
 
+
+
 public class CardPanelScript : MonoBehaviour
 {
-    public int numOfCards = 3;
-
+    public static CardPanelScript Instance;
     private int[] heroIdxs;
+
+  
 
     private void Start()
     {
-        heroIdxs = new int[numOfCards];
-        RandomHeroCards();
-        for (int i= 0; i<numOfCards; i++)
+        Instance = this;
+        heroIdxs = HeroManager.Instance.myHeroCardIdxs;
+        for (int i= 0; i<HeroManager.Instance.numOfCards; i++)
         {
             var g = Instantiate(HeroManager.Instance.heroCardPrefabs[heroIdxs[i]]);
             var _i = i;
@@ -26,20 +29,8 @@ public class CardPanelScript : MonoBehaviour
         }
     }
 
-    private void RandomHeroCards()
-    {
-        //数字列表
-        List<int> nums = new List<int>();
-        for(int i=0;i< HeroManager.Instance.heroCardPrefabs.Length;i++)
-        {
-            nums.Add(i);
-        }
-        //抽一次去掉一个数字
-        for(int i=0;i<numOfCards;i++)
-        {
-            var idx = Random.Range(0, nums.Count);
-            heroIdxs[i]=nums[idx];
-            nums.RemoveAt(idx);
-        }
-    }
+
+
+
+
 }

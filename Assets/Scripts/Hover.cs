@@ -47,10 +47,17 @@ public class Hover : MonoBehaviour
                 break;
         }
         spriteRenderer.enabled = true;
+        Cursor.visible = false;
     }
-
+    public void Activate(Sprite sprite)
+    {
+        spriteRenderer.sprite = sprite;
+        spriteRenderer.enabled = true;
+        Cursor.visible = false;
+    }
     public void Deactivate()
     {
         spriteRenderer.enabled = false;
+        Cursor.visible = true;
     }
 }

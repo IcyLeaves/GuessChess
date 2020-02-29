@@ -1,8 +1,11 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Photon.Pun;
+using Hashtable = ExitGames.Client.Photon.Hashtable;
+using Photon.Realtime;
 using UnityEngine.UI;
-
+using TMPro;
 
 public class JTZ : Hero
 {
@@ -23,13 +26,27 @@ public class JTZ : Hero
     {
         Predict, Reveal
     }
-    private IEnumerator Fade(float seconds)
-    {
-        //seconds秒后才发送关闭Panel消息
-        yield return new WaitForSeconds(seconds);
-        SendOverMessage();
-    }
 
+    #region override
+    public override void OnPlayerPropertiesUpdate(Player targetPlayer, Hashtable changedProps)
+    {
+        if (targetPlayer.ActorNumber != playerNum) return;
+        object tempObj;
+        //[开始]
+        if (changedProps.TryGetValue("startAbility", out tempObj))
+        {
+            int state = tempObj == null ? (int)AbilityState.Predict : (int)AbilityState.Reveal;
+            if (targetPlayer.IsLocal)
+                Ability(true, state);
+            else
+                Ability(false, state);
+        }
+        //[结束]
+        if (changedProps.TryGetValue("overAbility", out tempObj))
+        {
+            OnAbilityOver();
+        }
+    }
 
     public override bool OnMyTurnStart()
     {
@@ -43,7 +60,6 @@ public class JTZ : Hero
         isPredict = false;
         return canUse;
     }
-
     public override bool OnRoundStart()
     {
         canUse = true;
@@ -52,7 +68,6 @@ public class JTZ : Hero
         isPredict = false;
         return false;
     }
-
     public override bool OnAbilityOver()
     {
         base.OnAbilityOver();
@@ -63,7 +78,7 @@ public class JTZ : Hero
     {
         actualNum = selectNum;
     }
-    public override void Ability(bool isLocal, int abilityState = 0)
+    public override void Ability(bool isLocal, int abilityState)
     {
         //在Dark Panel下生成临时obj
         darkPanel.tempPanel = Instantiate(JTZ_Panel);
@@ -79,7 +94,7 @@ public class JTZ : Hero
                 revealPanel.SetActive(false);
                 if (isLocal)
                 {
-                    predictPanel.GetComponentInChildren<Text>().text = "预测对方下一轮选择的数字";
+                    predictPanel.GetComponentInChildren<TMP_Text>().text = "预测对方下一轮选择的数字";
                     int i = 1;
                     foreach (var btn in predictPanel.GetComponentsInChildren<Button>())
                     {
@@ -95,7 +110,7 @@ public class JTZ : Hero
                 }
                 else
                 {
-                    predictPanel.GetComponentInChildren<Text>().text = "对方正在预测你下一轮选择的数字";
+                    predictPanel.GetComponentInChildren<TMP_Text>().text = "对方正在预测你下一轮选择的数字";
                 }
                 break;
             case (int)AbilityState.Reveal:
@@ -103,11 +118,11 @@ public class JTZ : Hero
                 revealPanel.SetActive(true);
                 if (isLocal)
                 {
-                    revealPanel.GetComponentInChildren<Text>().text = "当前累计值为：\n" + GameManager.Instance.nowSum;
+                    revealPanel.GetComponentInChildren<TMP_Text>().text = "当前累计值为：\n" + GameManager.Instance.nowSum;
                 }
                 else
                 {
-                    revealPanel.GetComponentInChildren<Text>().text = "当前累计值为：\n" + "?";
+                    revealPanel.GetComponentInChildren<TMP_Text>().text = "当前累计值为：\n" + "?";
                 }
                 //两秒后自动消失
                 StartCoroutine(Fade(2f));
@@ -115,7 +130,14 @@ public class JTZ : Hero
         }
         darkPanel.gameObject.SetActive(true);
     }
+    #endregion
 
+    private IEnumerator Fade(float seconds)
+    {
+        //seconds秒后才发送关闭Panel消息
+        yield return new WaitForSeconds(seconds);
+        SendOverMessage();
+    }
     public void PredictNum(int val)
     {
         predictNum = val;
