@@ -2,6 +2,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using Hashtable = ExitGames.Client.Photon.Hashtable;
@@ -19,7 +20,7 @@ public class EYXJ : Hero
 
     private Button[] questBtns;
     private Button stopBtn;
-    private Text ammoText;
+    private TMP_Text ammoText;
 
     #region override
     public override void OnPlayerPropertiesUpdate(Player targetPlayer, Hashtable changedProps)
@@ -38,7 +39,7 @@ public class EYXJ : Hero
         //[结束]
         if (changedProps.TryGetValue("overAbility", out tempObj))
         {
-            if (targetPlayer.IsLocal)
+            if (targetPlayer.IsLocal && ammos>0)
                 Hover.Instance.Activate(Hover.HoverState.Attack);
             OnAbilityOver();
         }
@@ -81,8 +82,8 @@ public class EYXJ : Hero
         darkPanel.tempPanel = Instantiate(EYXJ_Panel);
         darkPanel.tempPanel.transform.SetParent(darkPanel.transform);
         darkPanel.tempPanel.transform.localPosition = Vector2.zero;
-        ammoText = darkPanel.tempPanel.transform.GetChild(0).gameObject.GetComponent<Text>();
-        Text text = darkPanel.tempPanel.transform.GetChild(1).gameObject.GetComponent<Text>();
+        ammoText = darkPanel.tempPanel.transform.GetChild(0).gameObject.GetComponent<TMP_Text>();
+        TMP_Text text = darkPanel.tempPanel.transform.GetChild(1).gameObject.GetComponent<TMP_Text>();
         questBtns = darkPanel.tempPanel.transform.GetChild(2).gameObject.GetComponentsInChildren<Button>();
         stopBtn = darkPanel.tempPanel.transform.GetChild(3).gameObject.GetComponent<Button>();
         ammos = 0;

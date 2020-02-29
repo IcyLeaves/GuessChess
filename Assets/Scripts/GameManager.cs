@@ -8,6 +8,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using Hashtable = ExitGames.Client.Photon.Hashtable;
 using System;
+using TMPro;
 
 public class GameManager : MonoBehaviourPunCallbacks
 {
@@ -32,10 +33,10 @@ public class GameManager : MonoBehaviourPunCallbacks
     public BoardManager boardManager;
     public Button startBtn;
     public List<SpriteRenderer> playerSprites;
-    public List<Text> playerTexts;
-    public Text logText;
+    public List<TMP_Text> playerTexts;
+    public TMP_Text logText;
     public List<TileScript> tiles;
-    public Text turnText;
+    public TMP_Text turnText;
     public GameObject heroCardPanel;
     public List<GameObject> heroIcons;
 

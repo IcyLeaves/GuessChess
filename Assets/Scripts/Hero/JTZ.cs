@@ -5,6 +5,7 @@ using Photon.Pun;
 using Hashtable = ExitGames.Client.Photon.Hashtable;
 using Photon.Realtime;
 using UnityEngine.UI;
+using TMPro;
 
 public class JTZ : Hero
 {
@@ -93,7 +94,7 @@ public class JTZ : Hero
                 revealPanel.SetActive(false);
                 if (isLocal)
                 {
-                    predictPanel.GetComponentInChildren<Text>().text = "预测对方下一轮选择的数字";
+                    predictPanel.GetComponentInChildren<TMP_Text>().text = "预测对方下一轮选择的数字";
                     int i = 1;
                     foreach (var btn in predictPanel.GetComponentsInChildren<Button>())
                     {
@@ -109,7 +110,7 @@ public class JTZ : Hero
                 }
                 else
                 {
-                    predictPanel.GetComponentInChildren<Text>().text = "对方正在预测你下一轮选择的数字";
+                    predictPanel.GetComponentInChildren<TMP_Text>().text = "对方正在预测你下一轮选择的数字";
                 }
                 break;
             case (int)AbilityState.Reveal:
@@ -117,11 +118,11 @@ public class JTZ : Hero
                 revealPanel.SetActive(true);
                 if (isLocal)
                 {
-                    revealPanel.GetComponentInChildren<Text>().text = "当前累计值为：\n" + GameManager.Instance.nowSum;
+                    revealPanel.GetComponentInChildren<TMP_Text>().text = "当前累计值为：\n" + GameManager.Instance.nowSum;
                 }
                 else
                 {
-                    revealPanel.GetComponentInChildren<Text>().text = "当前累计值为：\n" + "?";
+                    revealPanel.GetComponentInChildren<TMP_Text>().text = "当前累计值为：\n" + "?";
                 }
                 //两秒后自动消失
                 StartCoroutine(Fade(2f));

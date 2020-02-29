@@ -10,6 +10,7 @@ public class PCNJ : Hero
     public int N = 5;
     public Sprite trapSprite;
     public Sprite dmgTrapSprite;
+    public Sprite trapHoverSprite;
     public List<Vector2> trapPositions;
     public int dmgIdx;//受到攻击的trap索引
 
@@ -31,7 +32,7 @@ public class PCNJ : Hero
     public override bool OnStarPlaced(bool isLocal)
     {
         if (isLocal)
-            Hover.Instance.Activate(trapSprite);
+            Hover.Instance.Activate(trapHoverSprite);
         GameManager.Instance.logText.text = "请放置" + GetTrapName() + "，还剩"+N+"个";
         return true;
     }

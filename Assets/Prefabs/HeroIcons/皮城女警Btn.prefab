@@ -147,3 +147,8 @@ MonoBehaviour:
     type: 3}
   dmgTrapSprite: {fileID: -288721181032132973, guid: b8ce038908771914cadbbe717d491027,
     type: 3}
+  trapHoverSprite: {fileID: -6422276113438936833, guid: b8ce038908771914cadbbe717d491027,
+    type: 3}
+  trapPositions: []
+  dmgIdx: 0
+  extraAmmos: 0

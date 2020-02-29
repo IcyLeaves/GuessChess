@@ -3,8 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
-[RequireComponent(typeof(InputField))]
 public class PlayerNameInputField : MonoBehaviour
 {
     static string playerNamePrefKey = "PlayerName";
@@ -12,7 +12,7 @@ public class PlayerNameInputField : MonoBehaviour
     void Start()
     {
         string defaultName = "";
-        InputField _inputField = GetComponent<InputField>();
+        TMP_InputField _inputField = GetComponent<TMP_InputField>();
         if(_inputField!=null)
         {
             if(PlayerPrefs.HasKey(playerNamePrefKey))

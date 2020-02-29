@@ -2,6 +2,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
@@ -38,17 +39,17 @@ public class GHNL : Hero
         if (isLocal)
         {
             //技能内容，目前是生成预测文本
-            GHNL_Panel.GetComponentInChildren<Text>().text = "累计值在这五个数之中：\n";
+            GHNL_Panel.GetComponentInChildren<TMP_Text>().text = "累计值在这五个数之中：\n";
             var res = RandomNums(GameManager.Instance.nowSum, GameManager.Instance.goalNum);
             for (int i = 0; i < N; i++)
             {
-                GHNL_Panel.GetComponentInChildren<Text>().text += res[i] + " ";
+                GHNL_Panel.GetComponentInChildren<TMP_Text>().text += res[i] + " ";
             }
         }
         else
         {
             //敌方无法看见数字但能看见技能效果
-            GHNL_Panel.GetComponentInChildren<Text>().text =
+            GHNL_Panel.GetComponentInChildren<TMP_Text>().text =
                 "累计值在这五个数之中：\n" +
                 "? ? ? ? ?";
         }

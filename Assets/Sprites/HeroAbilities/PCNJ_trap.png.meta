@@ -8,6 +8,9 @@ TextureImporter:
   - first:
       213: -288721181032132973
     second: PCNJ_trap_1
+  - first:
+      213: -6422276113438936833
+    second: PCNJ_trap_2
   externalObjects: {}
   serializedVersion: 10
   mipmaps:
@@ -106,7 +109,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: acd88aabd1761944ca0043c6acb86dcd
+      spriteID: d9ee810524298a84d91349c1bef34dcc
       internalID: 508539898356516628
       vertices: []
       indices: 
@@ -127,8 +130,29 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 5cc272c4c25bb18468132cff1a418212
+      spriteID: bb15a76da06212e40a7855ee1b0e6e52
       internalID: -288721181032132973
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PCNJ_trap_2
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 0
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: dc3de965943f2d44e948ee5e479ff09c
+      internalID: -6422276113438936833
       vertices: []
       indices: 
       edges: []
