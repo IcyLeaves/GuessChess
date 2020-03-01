@@ -1068,7 +1068,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\u9009\u62E9\u5384\u8FD0\u5B9D\u7BB1\u6216\u5230\u6B64\u4E3A\u6B62"
+  m_text: "\u9009\u62E9\u5B9D\u7BB1\u6216\u5230\u6B64\u4E3A\u6B62"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 3e2368bcf732ec647ab1b1335a4c4780, type: 2}
   m_sharedMaterial: {fileID: 202646865405527901, guid: 3e2368bcf732ec647ab1b1335a4c4780,
@@ -1138,14 +1138,14 @@ MonoBehaviour:
   m_margin: {x: 0, y: 0, z: 0, w: 0}
   m_textInfo:
     textComponent: {fileID: 6258804418951961904}
-    characterCount: 11
+    characterCount: 9
     spriteCount: 0
     spaceCount: 0
-    wordCount: 2
+    wordCount: 1
     linkCount: 0
     lineCount: 1
     pageCount: 1
-    materialCount: 2
+    materialCount: 1
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_spriteAnimator: {fileID: 0}

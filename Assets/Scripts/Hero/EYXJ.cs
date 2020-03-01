@@ -110,7 +110,7 @@ public class EYXJ : Hero
         }
         else
         {
-            text.text = "对方正在选择厄运宝箱";
+            text.text = "对方正在选择宝箱";
             stopBtn.gameObject.SetActive(false);
         }
         darkPanel.gameObject.SetActive(true);
