@@ -11,10 +11,10 @@ GameObject:
   - component: {fileID: 3047659952391994825}
   - component: {fileID: 3047659952391994822}
   - component: {fileID: 3047659952391994824}
-  - component: {fileID: 3047659952391994827}
   - component: {fileID: 5241265418325973238}
+  - component: {fileID: 5751702724414163285}
   m_Layer: 0
-  m_Name: "\u89E3\u8131\u8005Btn"
+  m_Name: Btn01
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -73,13 +73,13 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: -1829571785979233316, guid: df9ef45e1c3fd6e43abf7e748000b483,
+  m_Sprite: {fileID: 4863955316720556390, guid: df9ef45e1c3fd6e43abf7e748000b483,
     type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 2, y: 2.0019531}
+  m_Size: {x: 2, y: 2}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -97,37 +97,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d27cdd29280eff349983e29dfc4185c9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  spriteDisable: {fileID: -1829571785979233316, guid: df9ef45e1c3fd6e43abf7e748000b483,
+  spriteDisable: {fileID: 4863955316720556390, guid: df9ef45e1c3fd6e43abf7e748000b483,
     type: 3}
-  spriteIdle: {fileID: 8032233713975060563, guid: df9ef45e1c3fd6e43abf7e748000b483,
+  spriteIdle: {fileID: -1116453198093333224, guid: df9ef45e1c3fd6e43abf7e748000b483,
     type: 3}
-  spriteHover: {fileID: 2594684892882424067, guid: df9ef45e1c3fd6e43abf7e748000b483,
+  spriteHover: {fileID: -7107176823282068773, guid: df9ef45e1c3fd6e43abf7e748000b483,
     type: 3}
-  spritePress: {fileID: 4035314243357986529, guid: df9ef45e1c3fd6e43abf7e748000b483,
+  spritePress: {fileID: 3609525518530505828, guid: df9ef45e1c3fd6e43abf7e748000b483,
     type: 3}
-  spritePassive: {fileID: -4650020037882402251, guid: df9ef45e1c3fd6e43abf7e748000b483,
+  spritePassive: {fileID: -8338919515772433515, guid: df9ef45e1c3fd6e43abf7e748000b483,
     type: 3}
   iconState: 0
   isPassive: 0
   heroId: 1
-  playerNumber: 1
+  playerNumber: -1
   heroAbility: 0
---- !u!58 &3047659952391994827
-CircleCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3047659952391994823}
-  m_Enabled: 1
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
-  serializedVersion: 2
-  m_Radius: 1.0009766
 --- !u!114 &5241265418325973238
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -140,6 +124,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d7c5637c4c5c95b4c86c8a64c2725415, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  heroId: 1
   isPassive: 0
   playerNum: -1
   canUse: 0
@@ -148,3 +133,29 @@ MonoBehaviour:
   isPredict: 0
   JTZ_Panel: {fileID: 5366878499241173457, guid: aa2c0defd68935d43917da600cbdc87b,
     type: 3}
+--- !u!61 &5751702724414163285
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3047659952391994823}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0.5, y: 0.5}
+    oldSize: {x: 2, y: 2}
+    newSize: {x: 2, y: 2}
+    adaptiveTilingThreshold: 0.5
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  serializedVersion: 2
+  m_Size: {x: 2, y: 2}
+  m_EdgeRadius: 0

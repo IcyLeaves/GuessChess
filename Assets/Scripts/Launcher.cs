@@ -3,6 +3,7 @@ using Photon.Realtime;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Launcher : MonoBehaviourPunCallbacks
 {
@@ -94,6 +95,10 @@ public class Launcher : MonoBehaviourPunCallbacks
         }
     }
 
+    public void Help()
+    {
+        SceneManager.LoadScene("Help");
+    }
     public void Quit()
     {
 #if UNITY_EDITOR

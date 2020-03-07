@@ -15,7 +15,7 @@ public class HeroIconScript : MonoBehaviour
     private SpriteRenderer spriteRenderer;
     public enum IconState
     {
-        Disable, Idle,Enable, Hover, Press,Passive
+        Disable, Idle,Enable, Hover, Press
     }
     public IconState iconState;
     public bool isPassive;
@@ -29,7 +29,10 @@ public class HeroIconScript : MonoBehaviour
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
         iconState = IconState.Disable;//初始不可按
-        if (isPassive) iconState = IconState.Passive;
+        if (isPassive)
+        {
+            spriteRenderer.sprite = spritePassive;
+        }
     }
     private void OnMouseOver()
     {
@@ -66,7 +69,11 @@ public class HeroIconScript : MonoBehaviour
 
     public void ChangeSprite(IconState state)
     {
-        if (iconState == IconState.Passive) return;
+        if (isPassive)
+        {
+            
+            return;
+        }
         switch (state)
         {
             case IconState.Disable:

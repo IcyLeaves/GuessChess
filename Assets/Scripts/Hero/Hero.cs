@@ -8,6 +8,7 @@ using Photon.Realtime;
 public abstract class Hero:MonoBehaviourPunCallbacks
 {
     static protected  DarkPanelScript darkPanel;
+    public int heroId = -1;
     public bool isPassive = false;
     public int playerNum=-1;
 

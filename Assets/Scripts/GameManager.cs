@@ -9,9 +9,14 @@ using UnityEngine.UI;
 using Hashtable = ExitGames.Client.Photon.Hashtable;
 using System;
 using TMPro;
+using System.IO;
+
+
 
 public class GameManager : MonoBehaviourPunCallbacks
 {
+    const int GOAL_NUM=20;
+
     public static GameManager Instance;
     public int localIdx;//己方玩家idx
     public int otherIdx;//敌方玩家idx
@@ -39,6 +44,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     public TMP_Text turnText;
     public GameObject heroCardPanel;
     public List<GameObject> heroIcons;
+    public Text debugText;
 
 
     public int currentPlayerIdx;
@@ -106,6 +112,7 @@ public class GameManager : MonoBehaviourPunCallbacks
         int roundWinnerIdx = -1;//回合获胜者idx
         while (true)
         {
+            debugText.text = "";
             round++;//回合数+1
             RoundStart(round);//【回合开始】
             DecideFirst();//决定先手玩家
@@ -148,6 +155,7 @@ public class GameManager : MonoBehaviourPunCallbacks
                     break;
                 }
                 attackPos = new Vector2(-1, -1);//玩家还未攻击
+                debugText.text += "\nattackPos 改变为 (" + attackPos.x + "," + attackPos.y + ")";
                 WinnerAttackOnce(turnWinnerIdx, restAmmos, ammos);//赢家进行一次攻击
                 yield return new WaitUntil(() => (
                 attackPos != new Vector2(-1, -1)) || isResetAmmo
@@ -209,9 +217,16 @@ public class GameManager : MonoBehaviourPunCallbacks
         if (changedProps.TryGetValue("attackPos", out tempObj))
         {
             if (attackPos == new Vector2(-1, -1))
+            {
                 attackPos = (Vector2)tempObj;
+                debugText.text += "\nattackPos 改变为 (" + ((Vector2)(tempObj)).x + "," + ((Vector2)(tempObj)).y + ")";
+            }
             else
+            {
                 tmpData["attackPos"] = tempObj;
+                debugText.text += "\ntmpData[attackPos] 改变为 (" + ((Vector2)(tempObj)).x + "," + ((Vector2)(tempObj)).y + ")";
+            }
+                
         }
     }
 
@@ -261,10 +276,12 @@ public class GameManager : MonoBehaviourPunCallbacks
         tmpData["currentPlayer"] = -1;
         tmpData["selectNum"] = -1;
         tmpData["attackPos"] = new Vector2(-1, -1);
+        debugText.text += "\ntmpData[attackPos] 改变为 (-1,-1)";
 
         currentPlayerIdx = 0;
         selectNum = 0;
         attackPos = Vector2.zero;
+        debugText.text += "\nattackPos 改变为 (0,0)";
     }
     #endregion
 
@@ -326,10 +343,15 @@ public class GameManager : MonoBehaviourPunCallbacks
         for (int i = 0; i < heroIcons.Count; i++)
         {
             var g = HeroManager.Instance.heroIconPrefabs[players[i].myHeroId];
-            g.GetComponent<HeroIconScript>().playerNumber = players[i].myActorNumber;
             g = Instantiate(g);
+            var gIcon = g.GetComponent<HeroIconScript>();
+            gIcon.playerNumber = players[i].myActorNumber;
             g.transform.SetParent(heroIcons[i].transform);
             g.transform.localPosition = Vector3.zero;
+            if(i==otherIdx)
+            {
+                gIcon.isPassive = true;
+            }
             //本地化一下脚本组件
             heroScripts.Add(g.GetComponentInChildren<Hero>());
         }
@@ -383,6 +405,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     {
         turnText.text = "第 " + round + " 回合   第 1 轮";
         currentPlayerIdx = -1;//还未决定先手玩家
+        goalNum = GOAL_NUM;//阈值默认20
         //清空历史记录
         HistoryScript.Instance.EmptyHistory();
         //【每回合开始】技能恢复
@@ -546,8 +569,16 @@ public class GameManager : MonoBehaviourPunCallbacks
     #region AttackStart
     private void AttackStart(int winnerIdx, int ammos)
     {
+        //如果本地是攻击方，清除本地的攻击坐标缓存，以防影响第一次攻击
         if (winnerIdx == localIdx)
+        {
+            attackPos = new Vector2(-1, -1);
+            debugText.text += "\nattackPos 改变为 (-1,-1)";
+            tmpData["attackPos"] = new Vector2(-1, -1);
+            debugText.text += "\ntmpData[attackPos] 改变为 (-1,-1)";
             MyAttackStart();
+        }
+            
     }
     private void MyAttackStart()
     {
@@ -581,8 +612,10 @@ public class GameManager : MonoBehaviourPunCallbacks
         {
             //那么使用缓存
             attackPos = (Vector2)tmpData["attackPos"];
+            debugText.text += "\nattackPos 改变为 (" + attackPos.x + "," + attackPos.y + ")";
             //随后清空以备下一次接收
             tmpData["attackPos"] = new Vector2(-1, -1);
+            debugText.text += "\ntmpData[attackPos] 改变为 (-1,-1)";
         }
     }
     #endregion
@@ -656,9 +689,6 @@ public class GameManager : MonoBehaviourPunCallbacks
         heroScripts[otherIdx].OnAttackOver();
         //取消鼠标悬浮图标
         Hover.Instance.Deactivate();
-        //清除本地的攻击坐标缓存，以防影响下次攻击
-        attackPos = new Vector2(-1, -1);
-        tmpData["attackPos"] = new Vector2(-1, -1);
     }
     #endregion
 
@@ -691,6 +721,32 @@ public class GameManager : MonoBehaviourPunCallbacks
                 board.ChangeSprite(BoardScript.BoardState.Star);
             }
         }
+        WriteWins(heroScripts[winnerIdx].heroId, heroScripts[1 - winnerIdx].heroId);
+    }
+    private void WriteWins(int winnerHeroId,int loserHeroId)
+    {
+        string filename = Application.dataPath + @"\Statistics\wins.txt";
+        List<string> res = new List<string>();
+        string[] strs = File.ReadAllLines(filename);
+        foreach(var str in strs)
+        {
+            var arr = str.Split(' ');
+            var heroId = int.Parse(arr[0]);
+            var wins = int.Parse(arr[1]);
+            var alls = int.Parse(arr[2]);
+            if(heroId==winnerHeroId)
+            {
+                wins++;
+                alls++;
+            }
+            else if(heroId==loserHeroId)
+            {
+                alls++;
+            }
+            res.Add(arr[0] + " " + wins.ToString() + " " + alls.ToString());
+        }
+        File.WriteAllLines(filename, res.ToArray());
+        Debug.Log(res);
     }
     #endregion
 

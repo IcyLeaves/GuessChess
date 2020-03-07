@@ -11,10 +11,10 @@ GameObject:
   - component: {fileID: 4390659271928236943}
   - component: {fileID: 4390659271928236928}
   - component: {fileID: 4390659271928236942}
-  - component: {fileID: 4390659271928236941}
   - component: {fileID: -52394725998047202}
+  - component: {fileID: -815201848945738011}
   m_Layer: 0
-  m_Name: "\u5149\u8F89\u5973\u90CEBtn"
+  m_Name: Btn00
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -73,13 +73,13 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 9209477249995860451, guid: 9e3a5375a63c536439d14edeff3181de,
+  m_Sprite: {fileID: 2335593881738646845, guid: 9e3a5375a63c536439d14edeff3181de,
     type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 2, y: 2.0019531}
+  m_Size: {x: 2, y: 2}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -97,36 +97,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d27cdd29280eff349983e29dfc4185c9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  spriteDisable: {fileID: 9209477249995860451, guid: 9e3a5375a63c536439d14edeff3181de,
+  spriteDisable: {fileID: 2335593881738646845, guid: 9e3a5375a63c536439d14edeff3181de,
     type: 3}
-  spriteIdle: {fileID: -515582905045431413, guid: 9e3a5375a63c536439d14edeff3181de,
+  spriteIdle: {fileID: 6948574703006133730, guid: 9e3a5375a63c536439d14edeff3181de,
     type: 3}
-  spriteHover: {fileID: -6428550005053140888, guid: 9e3a5375a63c536439d14edeff3181de,
+  spriteHover: {fileID: -2840914216128202179, guid: 9e3a5375a63c536439d14edeff3181de,
     type: 3}
-  spritePress: {fileID: 6383844926295683716, guid: 9e3a5375a63c536439d14edeff3181de,
+  spritePress: {fileID: -8227975998689850152, guid: 9e3a5375a63c536439d14edeff3181de,
     type: 3}
-  spritePassive: {fileID: -3704276499740168277, guid: 9e3a5375a63c536439d14edeff3181de,
+  spritePassive: {fileID: -9099703205823739904, guid: 9e3a5375a63c536439d14edeff3181de,
     type: 3}
   iconState: 0
   isPassive: 0
   heroId: 0
+  playerNumber: -1
   heroAbility: 0
---- !u!58 &4390659271928236941
-CircleCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4390659271928236929}
-  m_Enabled: 1
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
-  serializedVersion: 2
-  m_Radius: 1.0009766
 --- !u!114 &-52394725998047202
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -139,8 +124,35 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 81560f335a6fce94bb494dbda1accbb2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  heroId: 0
   isPassive: 0
-  darkPanel: {fileID: 0}
+  playerNum: -1
   canUse: 0
   GHNL_Panel: {fileID: 8392941675245523308, guid: b798561b6a580ee43be1988d16d00196,
     type: 3}
+--- !u!61 &-815201848945738011
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4390659271928236929}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0.5, y: 0.5}
+    oldSize: {x: 2, y: 2}
+    newSize: {x: 2, y: 2}
+    adaptiveTilingThreshold: 0.5
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  serializedVersion: 2
+  m_Size: {x: 2, y: 2}
+  m_EdgeRadius: 0
