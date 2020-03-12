@@ -6,6 +6,8 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
+using Hashtable = ExitGames.Client.Photon.Hashtable;
+using Photon.Realtime;
 
 //【天眼】每回合限一次，你可以窥探5个连续的数字，其中有1个是当前的累计值
 public class Hero00 : Hero
@@ -20,6 +22,23 @@ public class Hero00 : Hero
     public GameObject GHNL_Panel;
 
     #region override
+    protected override void StartAbility(Player targetPlayer, Hashtable changedProps)
+    {
+        object tempObj;
+        //[开始]
+        if (changedProps.TryGetValue("startAbility", out tempObj))
+        {
+            bool isLocal = false;
+            if (targetPlayer.IsLocal)
+                isLocal = true;
+            MyAnimation.Instance.SkillTrigger(heroId, isLocal);
+            StartCoroutine(MyAnimation.Instance.DelayToInvokeDo(delegate ()
+            {
+                Ability(isLocal);
+            }, MyAnimation.myAnimationTime));
+        }
+    }
+
     public override bool OnMyTurnStart()
     {
         return canUse;

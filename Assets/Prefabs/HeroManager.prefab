@@ -51,6 +51,7 @@ MonoBehaviour:
   - {fileID: 3228778038335724814, guid: 7400deed586704041a5919ce3f2fc4f8, type: 3}
   - {fileID: 801927018324022482, guid: 4529ff2e5ffeec646a953c38a7265881, type: 3}
   - {fileID: 2373804782407070377, guid: d40b04868088fd7418daf5a0531789d9, type: 3}
+  - {fileID: 2923385433945947836, guid: f788058ce81d58443844bb730989ae6d, type: 3}
   heroCardPrefabs:
   - {fileID: 5841115818274977659, guid: df90dfdb4e1a8cb40a1ae9ca5602e345, type: 3}
   - {fileID: 6283504622245642348, guid: 0ece04114428be742a4a2531b7f1ec8a, type: 3}
@@ -59,6 +60,7 @@ MonoBehaviour:
   - {fileID: 7331604080152122651, guid: 94fee4fe215f82e45b89a0c1ef9f3965, type: 3}
   - {fileID: 4458733328393416737, guid: 99a69eb29c09b6f4a8e0f387a3ece187, type: 3}
   - {fileID: 3541218906108953505, guid: 76784dd338e4dee4ab03619767d94d14, type: 3}
+  - {fileID: 8162942512250295736, guid: 02302e743634b9343ad886f07d47fa54, type: 3}
   darkPanel: {fileID: 4504173006119536655, guid: 367b4e6ba4d1d5649a48afaef49a351f,
     type: 3}
   numOfCards: 3

@@ -29,23 +29,21 @@ public class Hero01 : Hero
     }
 
     #region override
-    public override void OnPlayerPropertiesUpdate(Player targetPlayer, Hashtable changedProps)
+    protected override void StartAbility(Player targetPlayer, Hashtable changedProps)
     {
-        if (targetPlayer.ActorNumber != playerNum) return;
         object tempObj;
         //[开始]
         if (changedProps.TryGetValue("startAbility", out tempObj))
         {
             int state = tempObj == null ? (int)AbilityState.Predict : (int)AbilityState.Reveal;
+            bool isLocal = false;
             if (targetPlayer.IsLocal)
-                Ability(true, state);
-            else
-                Ability(false, state);
-        }
-        //[结束]
-        if (changedProps.TryGetValue("overAbility", out tempObj))
-        {
-            OnAbilityOver();
+                isLocal = true;
+            MyAnimation.Instance.SkillTrigger(heroId, isLocal);
+            StartCoroutine(MyAnimation.Instance.DelayToInvokeDo(delegate ()
+            {
+                Ability(isLocal,state);
+            }, MyAnimation.myAnimationTime));
         }
     }
 
@@ -81,18 +79,17 @@ public class Hero01 : Hero
     }
     public override void Ability(bool isLocal, int abilityState)
     {
-        //在Dark Panel下生成临时obj
-        darkPanel.tempPanel = Instantiate(JTZ_Panel);
-        darkPanel.tempPanel.transform.SetParent(darkPanel.transform);
-        darkPanel.tempPanel.transform.localPosition = Vector2.zero;
-        GameObject predictPanel = darkPanel.tempPanel.transform.GetChild(0).gameObject;
-        GameObject revealPanel = darkPanel.tempPanel.transform.GetChild(1).gameObject;
+        
         switch (abilityState)
         {
             case (int)AbilityState.Predict:
                 //预测阶段：按钮点击后反馈预测数字
+                //在Dark Panel下生成临时obj
+                darkPanel.tempPanel = Instantiate(JTZ_Panel);
+                darkPanel.tempPanel.transform.SetParent(darkPanel.transform);
+                darkPanel.tempPanel.transform.localPosition = Vector2.zero;
+                GameObject predictPanel = darkPanel.tempPanel.transform.GetChild(0).gameObject;
                 predictPanel.SetActive(true);
-                revealPanel.SetActive(false);
                 if (isLocal)
                 {
                     predictPanel.GetComponentInChildren<TMP_Text>().text = "预测对方下一轮选择的数字";
@@ -113,32 +110,26 @@ public class Hero01 : Hero
                 {
                     predictPanel.GetComponentInChildren<TMP_Text>().text = "对方正在预测你下一轮选择的数字";
                 }
+                darkPanel.gameObject.SetActive(true);
                 break;
             case (int)AbilityState.Reveal:
                 //揭示阶段：如预测成功，则揭示结果
-                revealPanel.SetActive(true);
                 if (isLocal)
                 {
-                    revealPanel.GetComponentInChildren<TMP_Text>().text = "当前累计值为：\n" + GameManager.Instance.nowSum;
+                    MyAnimation.Instance.LoadSum(1, -1);
                 }
-                else
-                {
-                    revealPanel.GetComponentInChildren<TMP_Text>().text = "当前累计值为：\n" + "?";
-                }
-                //两秒后自动消失
-                StartCoroutine(Fade(2f));
                 break;
         }
-        darkPanel.gameObject.SetActive(true);
+        
     }
     #endregion
 
-    private IEnumerator Fade(float seconds)
-    {
-        //seconds秒后才发送关闭Panel消息
-        yield return new WaitForSeconds(seconds);
-        SendOverMessage();
-    }
+    //private IEnumerator Fade(float seconds)
+    //{
+    //    //seconds秒后才发送关闭Panel消息
+    //    yield return new WaitForSeconds(seconds);
+    //    SendOverMessage();
+    //}
     public void PredictNum(int val)
     {
         predictNum = val;

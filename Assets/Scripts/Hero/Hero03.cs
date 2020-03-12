@@ -26,7 +26,16 @@ public class Hero03 : Hero
         {
             //只接受远程数据
             if (!targetPlayer.IsLocal)
+            {
                 trapPositions.Add((Vector2)tempObj);
+                if(trapPositions.Count==N)
+                {
+                    MyAnimation.Instance.StopAmmo(playerId);
+                }
+                //修改弹药面板
+                MyAnimation.Instance.MinusAmmo(playerId, 1);
+            }
+               
         }
     }
 
@@ -34,7 +43,8 @@ public class Hero03 : Hero
     {
         if (isLocal)
             Hover.Instance.Activate(trapHoverSprite);
-        GameManager.Instance.logText.text = "请放置" + GetTrapName() + "，还剩"+N+"个";
+        MyAnimation.Instance.SkillTrigger(heroId, isLocal);
+        MyAnimation.Instance.LoadAmmo(playerId, N, N, trapSprite);
         return true;
     }
     public override bool OnGameOver()
@@ -62,8 +72,8 @@ public class Hero03 : Hero
             trapPositions.Add(board.gridPos.pos);
             //回调，将被点击方块改成陷阱
             board.ChangeSprite(BoardScript.BoardState.Trap, trapSprite);
-            //修改提示文本
-            GameManager.Instance.logText.text = "请放置诱捕器，还剩" + (N - trapPositions.Count) + "个";
+            //修改弹药面板
+            MyAnimation.Instance.MinusAmmo(playerId, 1);
         }
         return trapPositions.Count == N;
     }

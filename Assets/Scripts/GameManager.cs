@@ -15,7 +15,7 @@ using System.IO;
 
 public class GameManager : MonoBehaviourPunCallbacks
 {
-    const int GOAL_NUM=20;
+    const int GOAL_NUM = 20;
 
     public static GameManager Instance;
     public int localIdx;//己方玩家idx
@@ -44,7 +44,6 @@ public class GameManager : MonoBehaviourPunCallbacks
     public TMP_Text turnText;
     public GameObject heroCardPanel;
     public List<GameObject> heroIcons;
-    public Text debugText;
 
 
     public int currentPlayerIdx;
@@ -103,18 +102,22 @@ public class GameManager : MonoBehaviourPunCallbacks
         SelectHero();//玩家选择英雄
         yield return new WaitUntil(SyncHeroCardSelected);//等待双方选完英雄
         ShowBoard();//显示棋盘
+        MyAnimation.Instance.ShowOnlyContent(MyAnimation.Contents.Star);
+        yield return new WaitUntil(AnimationUnlocked);//等待动画完毕
         PlaceStars();//玩家放置星星
         yield return new WaitUntil(SyncPlaceComplete);//等待双方放置星星完毕
-        PlaceTrap();//【放置额外陷阱】
+        yield return StartCoroutine(PlaceTrap());//【放置额外陷阱】
         yield return new WaitUntil(SyncTrapPlaced);//等待双方放置额外陷阱
         //<回合>开始
         int round = 0;//清空回合数
         int roundWinnerIdx = -1;//回合获胜者idx
         while (true)
         {
-            debugText.text = "";
             round++;//回合数+1
+            MyAnimation.Instance.Round(round);
+            yield return new WaitUntil(AnimationUnlocked);//等待动画完毕
             RoundStart(round);//【回合开始】
+            MyAnimation.Instance.LoadSum(0, 1);//隐藏累计值，显示阈值
             DecideFirst();//决定先手玩家
             yield return new WaitUntil(() => currentPlayerIdx >= 0);//等待先手玩家被分配
             //<轮次>开始
@@ -128,6 +131,7 @@ public class GameManager : MonoBehaviourPunCallbacks
                 TurnStart(round, turn);//【轮次开始】
                 ChooseNumbers();//玩家选择加数
                 yield return new WaitUntil(() => selectNum >= 0);//等待玩家选择数字
+                MyAnimation.Instance.LoadSum(0, -1);//隐藏累计值，显示阈值
                 NumSelected();//【玩家选择数字后】
                 AddToNowSum();//累计值更新
                 if (IsTurnContinue())//若轮次还将继续
@@ -139,6 +143,11 @@ public class GameManager : MonoBehaviourPunCallbacks
                 {
                     turnWinnerIdx = SetTurnWinner();//决出轮次赢家
                     TurnOver();//【轮次结束】
+                    MyAnimation.Contents tmpState =
+                        turnWinnerIdx == localIdx ? MyAnimation.Contents.Win : MyAnimation.Contents.Lose;
+                    MyAnimation.Instance.ShowOnlyContent(tmpState);//展示"获胜"或"失败"动画
+                    MyAnimation.Instance.LoadSum(1, 1);
+                    yield return new WaitUntil(AnimationUnlocked);//等待动画完毕
                     break;//结束<轮次>循环
                 }
             }
@@ -147,6 +156,7 @@ public class GameManager : MonoBehaviourPunCallbacks
             isResetAmmo = false;//目前弹药还没有重载
             AttackStart(turnWinnerIdx, ammos);//【攻击开始】
             int restAmmos = ammos;//剩余弹药设置为弹药数
+            yield return new WaitUntil(SyncAttackStart);//等待玩家都进入攻击阶段
             while (true)
             {
                 if (restAmmos <= 0)//如果子弹用完
@@ -155,7 +165,6 @@ public class GameManager : MonoBehaviourPunCallbacks
                     break;
                 }
                 attackPos = new Vector2(-1, -1);//玩家还未攻击
-                debugText.text += "\nattackPos 改变为 (" + attackPos.x + "," + attackPos.y + ")";
                 WinnerAttackOnce(turnWinnerIdx, restAmmos, ammos);//赢家进行一次攻击
                 yield return new WaitUntil(() => (
                 attackPos != new Vector2(-1, -1)) || isResetAmmo
@@ -167,6 +176,7 @@ public class GameManager : MonoBehaviourPunCallbacks
                     continue;//用新的弹药值重新攻击
                 }
                 AttackBoard(turnWinnerIdx);//发起攻击
+                yield return new WaitUntil(AnimationUnlocked);//等待动画完毕
                 restAmmos--;//剩余弹药-1
                 OnceAttackOver(turnWinnerIdx);//【一次攻击完成】
                 if (IsGameOver())//如果游戏结束
@@ -187,6 +197,8 @@ public class GameManager : MonoBehaviourPunCallbacks
         RestartGame();//重新开始游戏
         yield break;
     }
+
+
 
     public override void OnRoomPropertiesUpdate(Hashtable propertiesThatChanged)
     {
@@ -216,17 +228,18 @@ public class GameManager : MonoBehaviourPunCallbacks
         //[攻击坐标]
         if (changedProps.TryGetValue("attackPos", out tempObj))
         {
-            if (attackPos == new Vector2(-1, -1))
-            {
-                attackPos = (Vector2)tempObj;
-                debugText.text += "\nattackPos 改变为 (" + ((Vector2)(tempObj)).x + "," + ((Vector2)(tempObj)).y + ")";
-            }
-            else
-            {
-                tmpData["attackPos"] = tempObj;
-                debugText.text += "\ntmpData[attackPos] 改变为 (" + ((Vector2)(tempObj)).x + "," + ((Vector2)(tempObj)).y + ")";
-            }
-                
+            //只接受远程坐标
+            if (!targetPlayer.IsLocal)
+                if (attackPos == new Vector2(-1, -1))
+                {
+                    attackPos = (Vector2)tempObj;
+                }
+                else
+                {
+                    if (tmpData["attackPos"] == null) tmpData["attackPos"] = new Queue<Vector2>();
+                    (tmpData["attackPos"] as Queue<Vector2>).Enqueue((Vector2)tempObj);
+                }
+
         }
     }
 
@@ -237,6 +250,10 @@ public class GameManager : MonoBehaviourPunCallbacks
     public PlayerManager GetPlayerByActorNumber(int playerNum)
     {
         return players[PhotonNetwork.CurrentRoom.Players[playerNum].IsLocal ? localIdx : otherIdx];
+    }
+    private bool AnimationUnlocked()
+    {
+        return MyAnimation.locked == false;
     }
 
     #region InitScene
@@ -266,7 +283,7 @@ public class GameManager : MonoBehaviourPunCallbacks
             playerSprites[i].sprite = players[i].mySprite;
         }
         //更新场景文本
-        logText.text = "请按下Start准备";
+        logText.text = "";
         //开放Start按钮
         startBtn.interactable = true;
     }
@@ -275,13 +292,11 @@ public class GameManager : MonoBehaviourPunCallbacks
         tmpData = new Dictionary<string, object>();
         tmpData["currentPlayer"] = -1;
         tmpData["selectNum"] = -1;
-        tmpData["attackPos"] = new Vector2(-1, -1);
-        debugText.text += "\ntmpData[attackPos] 改变为 (-1,-1)";
+        tmpData["attackPos"] = new Queue<Vector2>();
 
         currentPlayerIdx = 0;
         selectNum = 0;
         attackPos = Vector2.zero;
-        debugText.text += "\nattackPos 改变为 (0,0)";
     }
     #endregion
 
@@ -308,10 +323,11 @@ public class GameManager : MonoBehaviourPunCallbacks
     #region HeroCardPanelInit
     private void SelectHero()
     {
-        HeroCardPanelInit();//打开英雄面板
+        GameStartUIInit();//游戏开始后的UI初始化
     }
-    private void HeroCardPanelInit()
-    { 
+    private void GameStartUIInit()
+    {
+        Destroy(startBtn.gameObject);//摧毁开始按钮
         heroCardPanel.SetActive(true);//显示Panel
     }
     #endregion
@@ -327,7 +343,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     }
     public void OnHeroCardClick(int val)
     {
-        heroCardPanel.SetActive(false);//关闭Panel
+        Destroy(heroCardPanel);//摧毁Panel
         players[localIdx].SelectHero(val);
     }
     #endregion
@@ -348,7 +364,7 @@ public class GameManager : MonoBehaviourPunCallbacks
             gIcon.playerNumber = players[i].myActorNumber;
             g.transform.SetParent(heroIcons[i].transform);
             g.transform.localPosition = Vector3.zero;
-            if(i==otherIdx)
+            if (i == otherIdx)
             {
                 gIcon.isPassive = true;
             }
@@ -379,23 +395,25 @@ public class GameManager : MonoBehaviourPunCallbacks
     #endregion
 
     #region PlaceTrap
-    private void PlaceTrap()
+    private IEnumerator PlaceTrap()
     {
-        players[localIdx].myState = heroScripts[localIdx].OnStarPlaced(true) ?
+        players[0].myState = heroScripts[0].OnStarPlaced(localIdx == 0) ?
             PlayerManager.PlayerState.PlaceTrap : PlayerManager.PlayerState.PlaceComplete;
-        players[otherIdx].myState = heroScripts[otherIdx].OnStarPlaced(false) ?
+        yield return new WaitUntil(AnimationUnlocked);//等待动画完毕
+        players[1].myState = heroScripts[1].OnStarPlaced(localIdx == 1) ?
             PlayerManager.PlayerState.PlaceTrap : PlayerManager.PlayerState.PlaceComplete;
+        yield return new WaitUntil(AnimationUnlocked);//等待动画完毕
     }
     #endregion
 
     #region SyncTrapPlaced
     private bool SyncTrapPlaced()
     {
-        if (players[localIdx].myState == PlayerManager.PlayerState.PlaceComplete)
-        {
-            logText.text = "等待" + players[otherIdx].myNickName + "放置"
-                + heroScripts[otherIdx].GetTrapName();
-        }
+        //if (players[localIdx].myState == PlayerManager.PlayerState.PlaceComplete)
+        //{
+        //    logText.text = "等待" + players[otherIdx].myNickName + "放置"
+        //        + heroScripts[otherIdx].GetTrapName();
+        //}
         return SyncPlayerState(PlayerManager.PlayerState.PlaceComplete);
     }
     #endregion
@@ -522,6 +540,15 @@ public class GameManager : MonoBehaviourPunCallbacks
     #region IsTurnContinue
     private bool IsTurnContinue()
     {
+        //【失败时触发】
+        if (nowSum > goalNum)
+        {
+            if (heroScripts[localIdx].OnFailure() ||
+                heroScripts[otherIdx].OnFailure())//防止失败的技能
+            {
+                return true;
+            }
+        }
         return nowSum <= goalNum;
     }
     #endregion
@@ -532,6 +559,9 @@ public class GameManager : MonoBehaviourPunCallbacks
     {
         if (currentPlayerIdx == localIdx)
             MyTurnOver();
+        //【每轮结束】技能触发
+        heroScripts[localIdx].OnEveryTurnOver();
+        heroScripts[otherIdx].OnEveryTurnOver();
     }
     private void MyTurnOver()
     {
@@ -569,16 +599,16 @@ public class GameManager : MonoBehaviourPunCallbacks
     #region AttackStart
     private void AttackStart(int winnerIdx, int ammos)
     {
-        //如果本地是攻击方，清除本地的攻击坐标缓存，以防影响第一次攻击
+        //将[本地]和[远程]的“自己”进入攻击状态
+        players[localIdx].myState = PlayerManager.PlayerState.Attack;
+        CustomProperties.SetLocalPlayerProp("state", PlayerManager.PlayerState.Attack);
+        //清除本地的攻击坐标缓存，以防影响第一次攻击
+        attackPos = new Vector2(-1, -1);
+        (tmpData["attackPos"] as Queue<Vector2>).Clear();
         if (winnerIdx == localIdx)
         {
-            attackPos = new Vector2(-1, -1);
-            debugText.text += "\nattackPos 改变为 (-1,-1)";
-            tmpData["attackPos"] = new Vector2(-1, -1);
-            debugText.text += "\ntmpData[attackPos] 改变为 (-1,-1)";
             MyAttackStart();
         }
-            
     }
     private void MyAttackStart()
     {
@@ -591,32 +621,39 @@ public class GameManager : MonoBehaviourPunCallbacks
     }
     #endregion
 
+    #region SyncAttackStart
+    private bool SyncAttackStart()
+    {
+        return SyncPlayerState(PlayerManager.PlayerState.Attack);
+    }
+    #endregion
     #region WinnerAttackOnce
     private void WinnerAttackOnce(int winnerIdx, int restAmmos, int ammos)
     {
-        //无论是[本地端]还是[远程端]都会调用
-        players[winnerIdx].Attack();
-        //[winnerIdx]为攻击方
-        if (winnerIdx == localIdx)//如果是[本地端.本地方]
-        {
-            logText.text = "当前累计值：" + nowSum + "/" + goalNum + "\n" +
-                "你共有" + ammos + "发弹药，还剩" + restAmmos + "发";
-        }
-        else//如果是[本地端.对方]
-        {
-            logText.text = "当前累计值：" + nowSum + "/" + goalNum + "\n" +
-                "等待" + players[otherIdx].myNickName + "攻击，还剩" + restAmmos + "发";
-        }
         //如果有缓存数据
-        if ((Vector2)tmpData["attackPos"] != new Vector2(-1, -1))
+        if ((tmpData["attackPos"] as Queue<Vector2>).Count != 0)
         {
             //那么使用缓存
-            attackPos = (Vector2)tmpData["attackPos"];
-            debugText.text += "\nattackPos 改变为 (" + attackPos.x + "," + attackPos.y + ")";
+            attackPos = (tmpData["attackPos"] as Queue<Vector2>).Peek();
             //随后清空以备下一次接收
-            tmpData["attackPos"] = new Vector2(-1, -1);
-            debugText.text += "\ntmpData[attackPos] 改变为 (-1,-1)";
+            (tmpData["attackPos"] as Queue<Vector2>).Dequeue();
         }
+        //无论是[本地端]还是[远程端]都会调用
+        players[winnerIdx].Attack();
+        MyAnimation.Instance.LoadAmmo(winnerIdx, restAmmos, ammos);
+        ////[winnerIdx]为攻击方
+        //if (winnerIdx == localIdx)//如果是[本地端.本地方]
+        //{
+
+        //    logText.text = "当前累计值：" + nowSum + "/" + goalNum + "\n" +
+        //        "你共有" + ammos + "发弹药，还剩" + restAmmos + "发";
+        //}
+        //else//如果是[本地端.对方]
+        //{
+        //    logText.text = "当前累计值：" + nowSum + "/" + goalNum + "\n" +
+        //        "等待" + players[otherIdx].myNickName + "攻击，还剩" + restAmmos + "发";
+        //}
+
     }
     #endregion
 
@@ -639,7 +676,10 @@ public class GameManager : MonoBehaviourPunCallbacks
             //【我的星星消亡】
             if (heroScripts[ruinedIdx].OnMyStarRuined())
             {
-                heroScripts[ruinedIdx].Ability(board);
+                StartCoroutine(MyAnimation.Instance.DelayToInvokeDo(delegate ()
+                {
+                    heroScripts[ruinedIdx].Ability(board);
+                }, MyAnimation.myAnimationTime));
             }
             else
             {
@@ -689,6 +729,8 @@ public class GameManager : MonoBehaviourPunCallbacks
         heroScripts[otherIdx].OnAttackOver();
         //取消鼠标悬浮图标
         Hover.Instance.Deactivate();
+        //隐藏子弹面板
+        MyAnimation.Instance.StopAmmo();
     }
     #endregion
 
@@ -707,6 +749,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     private void InitGameOver(int winnerIdx)
     {
         //公布赢家
+        logText.gameObject.SetActive(true);
         logText.text = "赢家是：" + players[winnerIdx].myNickName;
         //【赢家公布后】
         heroScripts[localIdx].OnGameOver();
@@ -723,23 +766,23 @@ public class GameManager : MonoBehaviourPunCallbacks
         }
         WriteWins(heroScripts[winnerIdx].heroId, heroScripts[1 - winnerIdx].heroId);
     }
-    private void WriteWins(int winnerHeroId,int loserHeroId)
+    private void WriteWins(int winnerHeroId, int loserHeroId)
     {
         string filename = Application.dataPath + @"\Statistics\wins.txt";
         List<string> res = new List<string>();
         string[] strs = File.ReadAllLines(filename);
-        foreach(var str in strs)
+        foreach (var str in strs)
         {
             var arr = str.Split(' ');
             var heroId = int.Parse(arr[0]);
             var wins = int.Parse(arr[1]);
             var alls = int.Parse(arr[2]);
-            if(heroId==winnerHeroId)
+            if (heroId == winnerHeroId)
             {
                 wins++;
                 alls++;
             }
-            else if(heroId==loserHeroId)
+            else if (heroId == loserHeroId)
             {
                 alls++;
             }

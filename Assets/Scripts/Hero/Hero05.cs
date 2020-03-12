@@ -36,6 +36,7 @@ public class Hero05 : Hero
 	#region override
 	public override bool OnMyStarRuined()
 	{
+		MyAnimation.Instance.SkillTrigger(heroId, playerId == GameManager.Instance.localIdx);
 		return true;
 	}
 	public override bool OnRoundStart()

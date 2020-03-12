@@ -23,27 +23,33 @@ public class Hero02 : Hero
     private TMP_Text ammoText;
 
     #region override
-    public override void OnPlayerPropertiesUpdate(Player targetPlayer, Hashtable changedProps)
+    protected override void StartAbility(Player targetPlayer, Hashtable changedProps)
     {
-        if (targetPlayer.ActorNumber != playerNum) return;
         object tempObj;
         //[开始]
         if (changedProps.TryGetValue("startAbility", out tempObj))
         {
             Hover.Instance.Deactivate();
+            bool isLocal = false;
             if (targetPlayer.IsLocal)
-                Ability(true);
-            else
-                Ability(false);
+                isLocal = true;
+            MyAnimation.Instance.SkillTrigger(heroId, isLocal);
+            StartCoroutine(MyAnimation.Instance.DelayToInvokeDo(delegate ()
+            {
+                Ability(isLocal);
+            }, MyAnimation.myAnimationTime));
         }
+    }
+    protected override void EndAbility(Player targetPlayer, Hashtable changedProps)
+    {
+        object tempObj;
         //[结束]
         if (changedProps.TryGetValue("overAbility", out tempObj))
         {
-            if (targetPlayer.IsLocal && ammos>0)
+            if (targetPlayer.IsLocal && ammos > 0)
                 Hover.Instance.Activate(Hover.HoverState.Attack);
             OnAbilityOver();
         }
-        OtherPlayerPropertiesUpdate(targetPlayer, changedProps);
     }
     protected override void OtherPlayerPropertiesUpdate(Player targetPlayer, Hashtable changedProps)
     {

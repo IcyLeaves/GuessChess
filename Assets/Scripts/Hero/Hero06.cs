@@ -1,9 +1,12 @@
-﻿using System.Collections;
+﻿using Photon.Realtime;
+using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
+using Hashtable = ExitGames.Client.Photon.Hashtable;
+using Photon.Pun;
 
 //【跃迁】回合开始时:本回合的阈值随机增加0-4点,然后你窥探这个阈值.
 public class Hero06 : Hero
@@ -14,34 +17,59 @@ public class Hero06 : Hero
 
     private TMP_Text numText;
     #region override
+    protected override void StartAbility(Player targetPlayer, Hashtable changedProps)
+    {
+        object tempObj;
+        //[开始]
+        if (changedProps.TryGetValue("startAbility", out tempObj))
+        {
+            bool isLocal = false;
+            if (targetPlayer.IsLocal)
+                isLocal = true;
+            MyAnimation.Instance.SkillTrigger(heroId, isLocal);
+            StartCoroutine(MyAnimation.Instance.DelayToInvokeDo(delegate ()
+            {
+                //Debug.Log(isLocal);
+                Ability(isLocal);
+            }, MyAnimation.myAnimationTime));
+        }
+    }
+    protected override void OtherPlayerPropertiesUpdate(Player targetPlayer, Hashtable changedProps)
+    {
+        object tempObj;
+        //[阈值增加]
+        if (changedProps.TryGetValue("thresholdAdd", out tempObj))
+        {
+            if(!targetPlayer.IsLocal)
+            {
+                GameManager.Instance.goalNum += (int)tempObj;
+                //Debug.Log("other:"+GameManager.Instance.goalNum + " " + (int)tempObj);
+            }
+
+        }
+    }
+
     public override bool OnRoundStart()
     {
+        if(playerId==GameManager.Instance.localIdx)
         SendStartMessage();
         return true;
     }
     public override void Ability(bool isLocal)
     {
-        //在Dark Panel下生成临时obj
-        darkPanel.tempPanel = Instantiate(Panel06);
-        darkPanel.tempPanel.transform.SetParent(darkPanel.transform);
-        darkPanel.tempPanel.transform.localPosition = Vector2.zero;
-        numText= darkPanel.tempPanel.transform.GetChild(0).gameObject.GetComponent<TMP_Text>();
         if (isLocal)
         {
             int val = RandomNumber();
+            
             GameManager.Instance.goalNum += val;
-            numText.text = "本回合的阈值为：\n" +
-                GameManager.Instance.goalNum + "";
+            //Debug.Log("local:" + GameManager.Instance.goalNum + " " + val);
+            CustomProperties.SetPlayerProp("thresholdAdd", val, playerNum);
+            MyAnimation.Instance.LoadSum(0, -1);//隐藏累计值，显示阈值
         }
         else
         {
-            numText.text = "本回合的阈值为：\n" +
-                "?";
-
+            MyAnimation.Instance.LoadSum(-1, 0);
         }
-        darkPanel.gameObject.SetActive(true);
-        //两秒后自动消失
-        StartCoroutine(Fade(2f));
         return;
     }
     #endregion
@@ -49,12 +77,5 @@ public class Hero06 : Hero
     private int RandomNumber()
     {
         return Random.Range(minN, maxN + 1);
-    }
-
-    private IEnumerator Fade(float seconds)
-    {
-        //seconds秒后才发送关闭Panel消息
-        yield return new WaitForSeconds(seconds);
-        SendOverMessage();
     }
 }

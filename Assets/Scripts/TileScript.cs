@@ -29,7 +29,10 @@ public class TileScript : MonoBehaviourPunCallbacks
     }
     private void OnMouseOver()
     {
-        if(EventSystem.current.IsPointerOverGameObject() == false)
+        //1.UI不遮挡
+        //2.动画已解锁
+        if(EventSystem.current.IsPointerOverGameObject() == false
+            && MyAnimation.locked==false)
         {
             ChangeSprite(TileState.Hover);
             //左键按下

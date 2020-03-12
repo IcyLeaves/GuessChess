@@ -30,7 +30,16 @@ public class Hero04 : Hero
         {
             //只接受远程数据
             if (!targetPlayer.IsLocal)
+            {
                 barrierPositions.Add((Vector2)tempObj);
+                if (barrierPositions.Count == N)
+                {
+                    MyAnimation.Instance.StopAmmo(playerId);
+                }
+                //修改弹药面板
+                MyAnimation.Instance.MinusAmmo(playerId, 1);
+            }
+                
         }
     }
 
@@ -38,7 +47,8 @@ public class Hero04 : Hero
     {
         if (isLocal)
             Hover.Instance.Activate(barrierSprite);
-        GameManager.Instance.logText.text = "请放置" + GetTrapName() + "，还剩" + N + "个";
+        MyAnimation.Instance.SkillTrigger(heroId, isLocal);
+        MyAnimation.Instance.LoadAmmo(playerId, N, N, barrierSprite);
         return true;
     }
     public override bool OnGameOver()
@@ -62,8 +72,8 @@ public class Hero04 : Hero
             CustomProperties.SetPlayerProp("barrierPos", pos, playerNum);
             barrierPositions.Add(pos);
             barriers.Add(CreateBarrier(board.transform.position));//这里创建了对象
-            //修改提示文本
-            GameManager.Instance.logText.text = "请放置护盾，还剩" + (N - barrierPositions.Count) + "个";
+            //修改弹药面板
+            MyAnimation.Instance.MinusAmmo(playerId, 1);
         }
         return barrierPositions.Count == N;
     }
