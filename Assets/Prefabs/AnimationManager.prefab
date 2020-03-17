@@ -231,6 +231,7 @@ MonoBehaviour:
   - {fileID: -3249157818618172089, guid: 98b7f3aa8adef0f42b1fdaf25a37a71f, type: 3}
   - {fileID: 8535441307993441521, guid: a359cb61780472f4f9dc669b782e8980, type: 3}
   - {fileID: -1034988599090079941, guid: d6c84d0fe5b5e6f44b8d157b66ec513c, type: 3}
+  - {fileID: 1150953623050092187, guid: 7b93e99510384ca47a98d3cf988f82bd, type: 3}
   numSprites:
   - {fileID: 6948721914695864972, guid: a7d1ef0716b38ee41b600577370ef58a, type: 3}
   - {fileID: 4351879575674309302, guid: a7d1ef0716b38ee41b600577370ef58a, type: 3}
@@ -251,6 +252,7 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 664c8ce283a4b794888623cb0fb39831, type: 3}
   - {fileID: 21300000, guid: e48833b384030be4792be9c75c945f1d, type: 3}
   - {fileID: 21300000, guid: 098b5b9a3a4571543927e1b1836727a5, type: 3}
+  - {fileID: 21300000, guid: 37fc0301e71bc1841ac455666232f3b7, type: 3}
   backgroundSprites:
   - {fileID: 21300000, guid: 0c168e9c84c8df447b7cd61c031e9682, type: 3}
   - {fileID: 21300000, guid: 3e00b87e43c109442af0b6a4d6a7083a, type: 3}

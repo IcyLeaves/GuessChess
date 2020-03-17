@@ -65,7 +65,7 @@ public abstract class Hero:MonoBehaviourPunCallbacks
     {
         return false;
     }
-    public virtual bool OnFailure()
+    public virtual bool OnFailure(bool isLocal)
     {
         return false;
     }
@@ -78,6 +78,10 @@ public abstract class Hero:MonoBehaviourPunCallbacks
         return false;
     }
     public virtual bool OnRoundStart()
+    {
+        return false;
+    }
+    public virtual bool OnNowSumChanged(bool isLocal)
     {
         return false;
     }

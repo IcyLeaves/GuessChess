@@ -58,13 +58,19 @@ public class MyAnimation : MonoBehaviour
     private void Activate(GameObject obj, float seconds)
     {
         locked = true;
-        obj.SetActive(true);
+        if(obj!=null)
+        {
+            obj.SetActive(true);
+        }
         StartCoroutine(Deactivate(obj, seconds));//myAnimationTime后自动关闭并解锁
     }
     private IEnumerator Deactivate(GameObject obj,float seconds)
     {
         yield return new WaitForSeconds(seconds);
-        obj.SetActive(false);
+        if (obj != null)
+        {
+            obj.SetActive(false);
+        }
         locked = false;
     }
     //延时执行
@@ -84,7 +90,6 @@ public class MyAnimation : MonoBehaviour
         background.sprite = backgroundSprites[0];
         content.sprite = contentSprites[(int)state];
         Activate(LOG, myAnimationTime);
-
     }
     public void SkillTrigger(int heroId,bool isLocal)
     {
@@ -106,6 +111,10 @@ public class MyAnimation : MonoBehaviour
         secondNum.sprite = numSprites[round % 10];
         content.sprite = contentSprites[(int)Contents.Round];
         Activate(LOG, myAnimationTime);
+    }
+    public void WaitForNull()
+    {
+        Activate(null, myAnimationTime);
     }
     #endregion
 
@@ -171,6 +180,13 @@ public class MyAnimation : MonoBehaviour
     {
         SUM.SetActive(true);
         sumToSprite(ableNowSum, ableGoalNum);
+    }
+    #endregion
+
+    #region Game
+    public void GameLockedForever()
+    {
+        locked = true;
     }
     #endregion
 }

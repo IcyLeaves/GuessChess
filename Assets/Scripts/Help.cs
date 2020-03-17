@@ -32,6 +32,11 @@ public class Help : MonoBehaviour
     {
         ReadWins();
     }
+    private void Update()
+    {
+        if (Input.GetMouseButtonDown(0))
+            Close();
+    }
     private void ReadWins()
     {
         string filename = Application.dataPath + @"\Statistics\wins.txt";
@@ -49,6 +54,7 @@ public class Help : MonoBehaviour
     
     public void Close()
     {
+        if(infoPanel.activeSelf)
         infoPanel.SetActive(false);
     }
 

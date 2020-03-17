@@ -2,9 +2,24 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Random = UnityEngine.Random;
+using Hashtable = ExitGames.Client.Photon.Hashtable;
+using Photon.Realtime;
 
 public class AiManager : PlayerManager
 {
+    public override void OnPlayerPropertiesUpdate(Player targetPlayer, Hashtable changedProps)
+    {
+        object tempObj;
+        //[进入攻击状态]
+        if (changedProps.TryGetValue("state", out tempObj))
+        {
+            PlayerState state = (PlayerState)tempObj;
+            if (state == PlayerState.Attack)
+            {
+                myState = state;
+            }
+        }
+    }
     public override void InitInfo()
     {
         myHp = 0;

@@ -117,7 +117,6 @@ public class GameManager : MonoBehaviourPunCallbacks
             MyAnimation.Instance.Round(round);
             yield return new WaitUntil(AnimationUnlocked);//等待动画完毕
             RoundStart(round);//【回合开始】
-            MyAnimation.Instance.LoadSum(0, 1);//隐藏累计值，显示阈值
             DecideFirst();//决定先手玩家
             yield return new WaitUntil(() => currentPlayerIdx >= 0);//等待先手玩家被分配
             //<轮次>开始
@@ -134,6 +133,8 @@ public class GameManager : MonoBehaviourPunCallbacks
                 MyAnimation.Instance.LoadSum(0, -1);//隐藏累计值，显示阈值
                 NumSelected();//【玩家选择数字后】
                 AddToNowSum();//累计值更新
+                AfterNumAdded();//【累计值更新后】
+                yield return new WaitUntil(AnimationUnlocked);//等待动画完毕
                 if (IsTurnContinue())//若轮次还将继续
                 {
                     TurnOver();//【轮次结束】
@@ -197,7 +198,6 @@ public class GameManager : MonoBehaviourPunCallbacks
         RestartGame();//重新开始游戏
         yield break;
     }
-
 
 
     public override void OnRoomPropertiesUpdate(Hashtable propertiesThatChanged)
@@ -424,6 +424,7 @@ public class GameManager : MonoBehaviourPunCallbacks
         turnText.text = "第 " + round + " 回合   第 1 轮";
         currentPlayerIdx = -1;//还未决定先手玩家
         goalNum = GOAL_NUM;//阈值默认20
+        MyAnimation.Instance.LoadSum(0, 1);//隐藏累计值，显示阈值
         //清空历史记录
         HistoryScript.Instance.EmptyHistory();
         //【每回合开始】技能恢复
@@ -537,14 +538,23 @@ public class GameManager : MonoBehaviourPunCallbacks
     }
     #endregion
 
+    #region AfterNumAdded
+    private void AfterNumAdded()
+    {
+        heroScripts[localIdx].OnNowSumChanged(true);
+        heroScripts[otherIdx].OnNowSumChanged(false);
+    }
+
+    #endregion
+
     #region IsTurnContinue
     private bool IsTurnContinue()
     {
         //【失败时触发】
         if (nowSum > goalNum)
         {
-            if (heroScripts[localIdx].OnFailure() ||
-                heroScripts[otherIdx].OnFailure())//防止失败的技能
+            if (heroScripts[localIdx].OnFailure(true) ||
+                heroScripts[otherIdx].OnFailure(false))//防止失败的技能
             {
                 return true;
             }
@@ -658,7 +668,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     #endregion
 
     #region AttackBoard
-    private void AttackBoard(int attackerIdx)
+    public void AttackBoard(int attackerIdx)
     {
         //获取[被攻击者]idx
         int ruinedIdx = 1 - attackerIdx;
@@ -715,7 +725,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     #endregion
 
     #region IsGameOver
-    private bool IsGameOver()
+    public bool IsGameOver()
     {
         return players[0].myHp == 0 || players[1].myHp == 0;
     }
@@ -735,7 +745,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     #endregion
 
     #region SetRoundWinner
-    private int SetRoundWinner()
+    public int SetRoundWinner()
     {
         if (players[0].myHp > 0)
             return 0;
@@ -746,7 +756,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     #endregion
 
     #region InitGameOver
-    private void InitGameOver(int winnerIdx)
+    public void InitGameOver(int winnerIdx)
     {
         //公布赢家
         logText.gameObject.SetActive(true);
@@ -794,7 +804,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     #endregion
 
     #region RestartGame
-    private void RestartGame()
+    public void RestartGame()
     {
         LoadArena();
     }

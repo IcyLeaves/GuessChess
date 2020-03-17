@@ -24,20 +24,7 @@ public class Hero07 : Hero
     #region override
     protected override void StartAbility(Player targetPlayer, Hashtable changedProps)
     {
-        object tempObj;
-        //[开始]
-        if (changedProps.TryGetValue("startAbility", out tempObj))
-        {
-            int state = tempObj == null ? (int)AbilityState.Protect : (int)tempObj;
-            bool isLocal = false;
-            if (targetPlayer.IsLocal)
-                isLocal = true;
-            MyAnimation.Instance.SkillTrigger(heroId, isLocal);
-            StartCoroutine(MyAnimation.Instance.DelayToInvokeDo(delegate ()
-            {
-                Ability(isLocal, state);
-            }, MyAnimation.myAnimationTime));
-        }
+        
     }
     public override bool OnMyTurnStart()
     {
@@ -64,11 +51,15 @@ public class Hero07 : Hero
         }
         return false;
     }
-    public override bool OnFailure()
+    public override bool OnFailure(bool isLocal)
     {
         if(isProtect)
         {
-            SendStartMessage((int)AbilityState.Escape);
+            MyAnimation.Instance.SkillTrigger(heroId, isLocal);
+            StartCoroutine(MyAnimation.Instance.DelayToInvokeDo(delegate ()
+            {
+                Ability(isLocal, (int)AbilityState.Escape);
+            }, MyAnimation.myAnimationTime));
             return true;
         }
         return false;
