@@ -46,8 +46,10 @@ public class Hero06 : Hero
     }
     public override bool OnNowSumChanged(bool isLocal)
     {
-        //累计值改变后时判断累计值和20是否相等
-        if (GameManager.Instance.nowSum == equalSum)
+        //1.累计值改变后时判断累计值和20是否相等
+        //2.当前玩家为playerID
+        if (GameManager.Instance.nowSum == equalSum &&
+            playerId==GameManager.Instance.currentPlayerIdx)
         {
             Ability(isLocal, 1);
             return true;
