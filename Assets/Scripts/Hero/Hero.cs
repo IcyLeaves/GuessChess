@@ -4,17 +4,21 @@ using UnityEngine;
 using Photon.Pun;
 using Hashtable = ExitGames.Client.Photon.Hashtable;
 using Photon.Realtime;
+using System;
 
 public abstract class Hero:MonoBehaviourPunCallbacks
 {
     static protected  DarkPanelScript darkPanel;
+    public int heroId = -1;
     public bool isPassive = false;
     public int playerNum=-1;
+    public int playerId = -1;
 
     private void Start()
     {
         darkPanel = HeroManager.Instance.darkPanel.GetComponent<DarkPanelScript>();
         playerNum = gameObject.GetComponent<HeroIconScript>().playerNumber;
+        playerId = gameObject.transform.parent.position.x < 0 ? 0 : 1;
     }
     public virtual void SendStartMessage(object val=null)
     {
@@ -27,21 +31,30 @@ public abstract class Hero:MonoBehaviourPunCallbacks
     public override void OnPlayerPropertiesUpdate(Player targetPlayer, Hashtable changedProps)
     {
         if (targetPlayer.ActorNumber != playerNum) return;
+        StartAbility(targetPlayer, changedProps);
+        EndAbility(targetPlayer, changedProps);
+        OtherPlayerPropertiesUpdate(targetPlayer, changedProps);
+    }
+    protected virtual void StartAbility(Player targetPlayer, Hashtable changedProps)
+    {
         object tempObj;
         //[开始]
         if (changedProps.TryGetValue("startAbility", out tempObj))
         {
+            bool isLocal = false;
             if (targetPlayer.IsLocal)
-                Ability(true);
-            else
-                Ability(false);
+                isLocal = true;
+            Ability(isLocal);
         }
+    }
+    protected virtual void EndAbility(Player targetPlayer,Hashtable changedProps)
+    {
+        object tempObj;
         //[结束]
         if (changedProps.TryGetValue("overAbility", out tempObj))
         {
             OnAbilityOver();
         }
-        OtherPlayerPropertiesUpdate(targetPlayer, changedProps);
     }
     protected virtual void OtherPlayerPropertiesUpdate(Player targetPlayer, Hashtable changedProps)
     {
@@ -52,11 +65,23 @@ public abstract class Hero:MonoBehaviourPunCallbacks
     {
         return false;
     }
+    public virtual bool OnFailure(bool isLocal)
+    {
+        return false;
+    }
     public virtual bool OnMyTurnOver()
     {
         return false;
     }
+    public virtual bool OnEveryTurnOver()
+    {
+        return false;
+    }
     public virtual bool OnRoundStart()
+    {
+        return false;
+    }
+    public virtual bool OnNowSumChanged(bool isLocal)
     {
         return false;
     }

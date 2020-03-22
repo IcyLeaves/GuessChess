@@ -94,8 +94,6 @@ public class PlayerManager : MonoBehaviourPunCallbacks
         //Attack动作只在本地显示
         if(myIdx==GameManager.Instance.localIdx)
         {
-            CustomProperties.SetPlayerProp("state", PlayerState.Attack, myActorNumber);
-            myState = PlayerState.Attack;
             //启用鼠标图标渲染
             Hover.Instance.Activate(Hover.HoverState.Attack);
             //等待BoardScript接收单击指令调用ClickGrid
@@ -104,10 +102,11 @@ public class PlayerManager : MonoBehaviourPunCallbacks
     private void Attack(BoardScript board)
     {
         //1.必须是别人的面板
-        //2.不能是已攻击过的面板
+        //2.不能是已攻击或正在攻击的面板
         if (board.gridPos.playerIdx != myIdx &&
             board.boardState!=BoardScript.BoardState.Damaged)
         {
+            GameManager.Instance.attackPos = board.gridPos.pos;
             //发送攻击坐标
             CustomProperties.SetPlayerProp("attackPos", board.gridPos.pos, myActorNumber);
         }
@@ -169,6 +168,8 @@ public class PlayerManager : MonoBehaviourPunCallbacks
                     {
                         //取消鼠标悬浮图标
                         Hover.Instance.Deactivate();
+                        //隐藏弹药面板
+                        MyAnimation.Instance.StopAmmo(myIdx);
                         //放置完成，则使[本地端.本地方]和[远程端.本地方]放置完成
                         CustomProperties.SetPlayerProp("state", PlayerState.PlaceComplete, myActorNumber);
                         myState = PlayerState.PlaceComplete;
